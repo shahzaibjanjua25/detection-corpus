@@ -1,0 +1,32 @@
+{
+  "repo_name": "detection-forge",
+  "description": "Detection-as-Code corpus: Sigma, correlation, and YARA rules with ATT&CK mapping, false-positive documentation, lifecycle tracking, SIEM translation notes, and Architecture Decision Records.",
+  "counts_are_minimum": true,
+  "total_rules_minimum": 2500,
+  "sigma_windows_minimum": 2400,
+  "sigma_linux_minimum": 10,
+  "sigma_network_minimum": 4,
+  "sigma_cloud_minimum": 6,
+  "correlation_minimum": 12,
+  "yara_minimum": 160,
+  "attack_version": "v14",
+  "sigma_spec_version": "2.x",
+  "yara_version": "4.5",
+  "uuid_derivation": "sha256(title|logsource.category|primary_technique)[0:8]-... (deterministic)",
+  "tactics_covered": [
+    "credential-access",
+    "execution",
+    "persistence",
+    "privilege-escalation",
+    "defense-evasion",
+    "discovery",
+    "lateral-movement",
+    "collection",
+    "exfiltration",
+    "command-and-control",
+    "initial-access"
+  ],
+  "counts_note": "All counts are floors, not exact totals. The corpus is actively expanding. Run the discovery commands in README.md for live counts.",
+  "quality_note": "Contains both curated high-fidelity rules and experimental volume rules. See README.md and docs/adr/ for quality gates and lifecycle.",
+  "license_note": "Rules follow Detection Rule License (DRL) 1.1 principles where applicable. Supporting documentation is intended for internal detection-engineering use."
+}

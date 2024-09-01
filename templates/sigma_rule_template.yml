@@ -1,0 +1,25 @@
+title: <Descriptive Title>
+id: <deterministic-uuid>
+status: experimental
+description: <One or two sentence description of what is detected and why it is suspicious.>
+references:
+  - https://attack.mitre.org/techniques/T####/
+author: DetectionForge
+date: YYYY/MM/DD
+modified: YYYY/MM/DD
+tags:
+  - attack.<tactic>
+  - attack.t####
+logsource:
+  category: <category>
+  product: <product>
+detection:
+  selection:
+    <Field>: <value>
+  filter_main_example:
+    <Field>: <benign value>
+  condition: selection and not 1 of filter_main_*
+falsepositives:
+  - <Realistic scenario 1>
+  - <Realistic scenario 2>
+level: medium
