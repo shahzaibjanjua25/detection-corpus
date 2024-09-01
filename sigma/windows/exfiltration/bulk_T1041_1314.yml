@@ -1,0 +1,29 @@
+title: Exfiltration Over C2 Channel Suspicious Activity Pattern 1314
+id: cf571fb5-7897-469a-c712-c824d5746772
+status: experimental
+description: Detects process or registry activity patterns associated with Exfiltration Over C2 Channel (T1041).
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2025/09/06
+modified: 2025/06/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'bulk_pattern_1314'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration over c2 channel
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
