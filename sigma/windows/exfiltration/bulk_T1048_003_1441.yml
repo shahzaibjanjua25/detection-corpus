@@ -1,0 +1,29 @@
+title: Exfiltration Over Unencrypted Protocol Suspicious Activity Pattern 1441
+id: 73c89dc2-e15f-4a91-08db-9bdb430a548b
+status: experimental
+description: Detects process or registry activity patterns associated with Exfiltration Over Unencrypted Protocol (T1048.003).
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+author: DetectionForge
+date: 2024/02/11
+modified: 2025/06/01
+tags:
+  - attack.exfiltration
+  - attack.t1048.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'bulk_pattern_1441'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration over unencrypted protocol
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
