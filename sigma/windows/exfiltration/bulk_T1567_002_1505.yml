@@ -1,0 +1,29 @@
+title: Exfiltration to Cloud Storage Suspicious Activity Pattern 1505
+id: 9679c8f4-0add-419e-fd64-215d95c988fb
+status: experimental
+description: Detects process or registry activity patterns associated with Exfiltration to Cloud Storage (T1567.002).
+references:
+  - https://attack.mitre.org/techniques/T1567/002/
+author: DetectionForge
+date: 2024/04/15
+modified: 2025/06/01
+tags:
+  - attack.exfiltration
+  - attack.t1567.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'bulk_pattern_1505'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration to cloud storage
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
