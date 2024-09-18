@@ -1,0 +1,29 @@
+title: ExfilC2 Activity Indicator 3145
+id: 90acd442-4992-49f4-a0ec-c8d8267a27aa
+status: experimental
+description: Detects activity patterns associated with ExfilC2 (T1041).
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2024/06/25
+modified: 2025/07/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfilc2'
+      - 'fast_3145'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving exfilc2
+  - Security tools and monitoring agents
+level: medium
