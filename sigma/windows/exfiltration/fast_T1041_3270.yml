@@ -1,0 +1,29 @@
+title: ExfilC2 Activity Indicator 3270
+id: b29edf4c-dc73-4b4f-a669-9b79a548421b
+status: experimental
+description: Detects activity patterns associated with ExfilC2 (T1041).
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2024/10/28
+modified: 2025/07/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfilc2'
+      - 'fast_3270'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving exfilc2
+  - Security tools and monitoring agents
+level: medium
