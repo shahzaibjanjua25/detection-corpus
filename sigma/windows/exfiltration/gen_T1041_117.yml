@@ -1,0 +1,29 @@
+title: Suspicious Exfiltration Over C2 Channel Activity Indicator 117
+id: e4c3e968-4c88-a58b-395d-a911c081f805
+status: experimental
+description: Detects process or activity patterns associated with Exfiltration Over C2 Channel (T1041).
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2024/08/19
+modified: 2025/04/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'suspicious_pattern_117'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration over c2 channel
+  - Security tools and monitoring agents performing similar actions
+level: medium
