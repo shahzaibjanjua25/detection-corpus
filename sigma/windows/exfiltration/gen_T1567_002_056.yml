@@ -1,0 +1,29 @@
+title: Suspicious Exfiltration to Cloud Storage Activity Indicator 056
+id: e1b9fbbe-6f2b-33ab-0f1b-ecd6d33402ef
+status: experimental
+description: Detects process or activity patterns associated with Exfiltration to Cloud Storage (T1567.002).
+references:
+  - https://attack.mitre.org/techniques/T1567/002/
+author: DetectionForge
+date: 2024/06/19
+modified: 2025/04/01
+tags:
+  - attack.exfiltration
+  - attack.t1567.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'suspicious_pattern_56'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration to cloud storage
+  - Security tools and monitoring agents performing similar actions
+level: medium
