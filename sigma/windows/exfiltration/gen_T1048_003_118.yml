@@ -1,0 +1,29 @@
+title: Suspicious Exfiltration Over Unencrypted Protocol Activity Indicator 118
+id: b4387127-2987-c008-d16a-83cfd2c60cc9
+status: experimental
+description: Detects process or activity patterns associated with Exfiltration Over Unencrypted Protocol (T1048.003).
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+author: DetectionForge
+date: 2024/08/20
+modified: 2025/04/01
+tags:
+  - attack.exfiltration
+  - attack.t1048.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfiltration'
+      - 'suspicious_pattern_118'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving exfiltration over unencrypted protocol
+  - Security tools and monitoring agents performing similar actions
+level: medium
