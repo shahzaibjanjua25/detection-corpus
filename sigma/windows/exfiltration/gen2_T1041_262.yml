@@ -1,0 +1,29 @@
+title: Detection Pattern for ExfilC2 Activity 262
+id: 0c5fa078-49e7-cdbf-a219-4c34497f0c99
+status: experimental
+description: Detects activity patterns associated with ExfilC2 (T1041).
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2025/02/18
+modified: 2025/05/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'exfilc2'
+      - 'pattern_262'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
