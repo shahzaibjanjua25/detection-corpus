@@ -1,0 +1,32 @@
+title: Archive Staging for Exfiltration
+id: 375b08a8-b4f5-9c0d-ce27-068ceb0fca0e
+status: stable
+description: Detects creation of compressed archives with sensitive path indicators
+references:
+  - https://attack.mitre.org/techniques/T1560/001/
+author: DetectionForge
+date: 2024/03/07
+modified: 2025/03/01
+tags:
+  - attack.exfiltration
+  - attack.t1560.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\7z.exe'
+      - '\rar.exe'
+      - '\tar.exe'
+    CommandLine|contains:
+      - '.zip'
+      - '.rar'
+      - '.7z'
+      - '\Users\'
+      - '\Documents\'
+  condition: selection
+falsepositives:
+  - Users creating personal backups
+  - Legitimate data transfer packages
+level: medium
