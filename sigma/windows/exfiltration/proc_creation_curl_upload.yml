@@ -1,0 +1,29 @@
+title: Curl / Invoke-WebRequest Upload
+id: e83e7ddd-3033-eec1-b755-a235cd211368
+status: stable
+description: Detects curl or PowerShell uploading data to remote destinations
+references:
+  - https://attack.mitre.org/techniques/T1041/
+author: DetectionForge
+date: 2024/03/08
+modified: 2025/03/01
+tags:
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'curl '
+      - '-X POST'
+      - '-d @'
+      - 'Invoke-WebRequest'
+      - '-Method Post'
+      - '-InFile'
+  condition: selection
+falsepositives:
+  - CI/CD pipelines
+  - Legitimate API integrations
+level: medium
