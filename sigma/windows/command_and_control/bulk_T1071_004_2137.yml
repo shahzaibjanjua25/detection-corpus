@@ -1,0 +1,29 @@
+title: DNS Suspicious Activity Pattern 2137
+id: 8ef97440-15f9-4e99-0195-d7446fae47e0
+status: experimental
+description: Detects process or registry activity patterns associated with DNS (T1071.004).
+references:
+  - https://attack.mitre.org/techniques/T1071/004/
+author: DetectionForge
+date: 2024/02/07
+modified: 2025/06/01
+tags:
+  - attack.command-and-control
+  - attack.t1071.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'dns'
+      - 'bulk_pattern_2137'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving dns
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
