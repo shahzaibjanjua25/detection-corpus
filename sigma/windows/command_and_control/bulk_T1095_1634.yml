@@ -1,0 +1,29 @@
+title: Non-Application Layer Protocol Suspicious Activity Pattern 1634
+id: da3b2d21-3f27-47f9-94c9-aabd156bc8d4
+status: experimental
+description: Detects process or registry activity patterns associated with Non-Application Layer Protocol (T1095).
+references:
+  - https://attack.mitre.org/techniques/T1095/
+author: DetectionForge
+date: 2024/08/22
+modified: 2025/06/01
+tags:
+  - attack.command-and-control
+  - attack.t1095
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'non-application'
+      - 'bulk_pattern_1634'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving non-application layer protocol
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
