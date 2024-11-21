@@ -1,0 +1,29 @@
+title: Non-Standard Port Suspicious Activity Pattern 2014
+id: 9894fe7f-b456-4ac4-d6f2-cfeabc73534a
+status: experimental
+description: Detects process or registry activity patterns associated with Non-Standard Port (T1571).
+references:
+  - https://attack.mitre.org/techniques/T1571/
+author: DetectionForge
+date: 2025/09/06
+modified: 2025/06/01
+tags:
+  - attack.command-and-control
+  - attack.t1571
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'non-standard'
+      - 'bulk_pattern_2014'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving non-standard port
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
