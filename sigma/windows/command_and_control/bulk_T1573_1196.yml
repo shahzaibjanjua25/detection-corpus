@@ -1,0 +1,29 @@
+title: Encrypted Channel Suspicious Activity Pattern 1196
+id: 2329835f-3b01-46f5-1cf0-f52b8ae9d07b
+status: experimental
+description: Detects process or registry activity patterns associated with Encrypted Channel (T1573).
+references:
+  - https://attack.mitre.org/techniques/T1573/
+author: DetectionForge
+date: 2025/05/11
+modified: 2025/06/01
+tags:
+  - attack.command-and-control
+  - attack.t1573
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'encrypted'
+      - 'bulk_pattern_1196'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving encrypted channel
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
