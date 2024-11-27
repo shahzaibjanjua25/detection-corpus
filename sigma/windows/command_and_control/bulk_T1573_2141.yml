@@ -1,0 +1,29 @@
+title: Encrypted Channel Suspicious Activity Pattern 2141
+id: 7a5d4918-c65b-47e0-853b-8296c7a1d2b2
+status: experimental
+description: Detects process or registry activity patterns associated with Encrypted Channel (T1573).
+references:
+  - https://attack.mitre.org/techniques/T1573/
+author: DetectionForge
+date: 2024/02/11
+modified: 2025/06/01
+tags:
+  - attack.command-and-control
+  - attack.t1573
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'encrypted'
+      - 'bulk_pattern_2141'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving encrypted channel
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
