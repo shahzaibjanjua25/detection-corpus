@@ -1,0 +1,29 @@
+title: Suspicious Non-Standard Port Activity Indicator 187
+id: 5aa749eb-6042-9247-45f4-68a7968d1e71
+status: experimental
+description: Detects process or activity patterns associated with Non-Standard Port (T1571).
+references:
+  - https://attack.mitre.org/techniques/T1571/
+author: DetectionForge
+date: 2024/10/28
+modified: 2025/04/01
+tags:
+  - attack.command-and-control
+  - attack.t1571
+logsource:
+  category: network_connection
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'non-standard'
+      - 'suspicious_pattern_187'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving non-standard port
+  - Security tools and monitoring agents performing similar actions
+level: medium
