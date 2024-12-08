@@ -1,0 +1,28 @@
+title: WebC2 Pattern 5003
+id: 6525cb04-8daf-4bde-a788-7b80376b4f13
+status: experimental
+description: Detects patterns associated with WebC2 (T1071.001).
+references:
+  - https://attack.mitre.org/techniques/T1071/001/
+author: DetectionForge
+date: 2024/03/04
+modified: 2025/08/01
+tags:
+  - attack.command-and-control
+  - attack.t1071.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'webc2'
+      - 'x_5003'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for webc2
+  - Security and monitoring tools
+level: medium
