@@ -1,0 +1,28 @@
+title: WebC2 Pattern 5063
+id: 139aa364-4031-478a-aaa8-3e29d0b89334
+status: experimental
+description: Detects patterns associated with WebC2 (T1071.001).
+references:
+  - https://attack.mitre.org/techniques/T1071/001/
+author: DetectionForge
+date: 2024/05/03
+modified: 2025/08/01
+tags:
+  - attack.command-and-control
+  - attack.t1071.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'webc2'
+      - 'x_5063'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for webc2
+  - Security and monitoring tools
+level: medium
