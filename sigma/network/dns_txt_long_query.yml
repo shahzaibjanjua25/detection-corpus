@@ -1,0 +1,24 @@
+title: Long DNS TXT Query (Possible Tunneling)
+id: 368eb015-0a73-9136-aca6-e1d0eadce8be
+status: test
+description: Detects unusually long DNS TXT queries that may indicate tunneling
+references:
+  - https://attack.mitre.org/techniques/T1071/004/
+author: DetectionForge
+date: 2024/11/10
+modified: 2025/03/20
+tags:
+  - attack.command-and-control
+  - attack.t1071.004
+logsource:
+  category: dns
+  product: any
+detection:
+  selection:
+    query_type: 'TXT'
+    query|re: '.{60,}'
+  condition: selection
+falsepositives:
+  - Legitimate TXT records for SPF/DKIM with long policies
+  - Some CDN validation records
+level: medium
