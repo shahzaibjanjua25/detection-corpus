@@ -1,0 +1,29 @@
+title: System Network Configuration Discovery Suspicious Activity Pattern 1547
+id: 90ad6dba-6434-4225-73fb-6082885798a4
+status: experimental
+description: Detects process or registry activity patterns associated with System Network Configuration Discovery (T1016).
+references:
+  - https://attack.mitre.org/techniques/T1016/
+author: DetectionForge
+date: 2024/05/27
+modified: 2025/06/01
+tags:
+  - attack.discovery
+  - attack.t1016
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'system'
+      - 'bulk_pattern_1547'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving system network configuration discovery
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
