@@ -1,0 +1,29 @@
+title: Local Groups Suspicious Activity Pattern 1235
+id: fe973b1d-ecf3-406e-a7ef-0629cccf7ce0
+status: experimental
+description: Detects process or registry activity patterns associated with Local Groups (T1069.001).
+references:
+  - https://attack.mitre.org/techniques/T1069/001/
+author: DetectionForge
+date: 2025/06/19
+modified: 2025/06/01
+tags:
+  - attack.discovery
+  - attack.t1069.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'local'
+      - 'bulk_pattern_1235'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving local groups
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
