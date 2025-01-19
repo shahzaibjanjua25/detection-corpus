@@ -1,0 +1,29 @@
+title: System Information Discovery Suspicious Activity Pattern 1984
+id: d96c3751-dfab-43ff-2437-7d61edc399cb
+status: experimental
+description: Detects process or registry activity patterns associated with System Information Discovery (T1082).
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: DetectionForge
+date: 2025/08/07
+modified: 2025/06/01
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'system'
+      - 'bulk_pattern_1984'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving system information discovery
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
