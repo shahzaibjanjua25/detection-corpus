@@ -1,0 +1,29 @@
+title: Domain Trust Discovery Suspicious Activity Pattern 1866
+id: 758e888d-cb92-473f-ed5d-4964abd4f615
+status: experimental
+description: Detects process or registry activity patterns associated with Domain Trust Discovery (T1482).
+references:
+  - https://attack.mitre.org/techniques/T1482/
+author: DetectionForge
+date: 2025/04/11
+modified: 2025/06/01
+tags:
+  - attack.discovery
+  - attack.t1482
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domain'
+      - 'bulk_pattern_1866'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving domain trust discovery
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
