@@ -1,0 +1,29 @@
+title: SystemInfo Activity Indicator 3638
+id: 32bf1130-5caa-4285-ae3f-00b7a173e99d
+status: experimental
+description: Detects activity patterns associated with SystemInfo (T1082).
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: DetectionForge
+date: 2024/03/10
+modified: 2025/07/01
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'systeminfo'
+      - 'fast_3638'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving systeminfo
+  - Security tools and monitoring agents
+level: medium
