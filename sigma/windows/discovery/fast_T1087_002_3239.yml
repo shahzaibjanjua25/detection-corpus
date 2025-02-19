@@ -1,0 +1,29 @@
+title: DomainAccount Activity Indicator 3239
+id: 9e58e897-7d54-48f4-a79f-ad3e5616fa89
+status: experimental
+description: Detects activity patterns associated with DomainAccount (T1087.002).
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2024/09/27
+modified: 2025/07/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domainaccount'
+      - 'fast_3239'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving domainaccount
+  - Security tools and monitoring agents
+level: medium
