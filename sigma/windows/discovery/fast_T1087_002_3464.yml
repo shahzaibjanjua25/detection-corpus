@@ -1,0 +1,29 @@
+title: DomainAccount Activity Indicator 3464
+id: 6b477f94-a276-4f1d-a5cb-a4a73d939279
+status: experimental
+description: Detects activity patterns associated with DomainAccount (T1087.002).
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2025/05/10
+modified: 2025/07/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domainaccount'
+      - 'fast_3464'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving domainaccount
+  - Security tools and monitoring agents
+level: medium
