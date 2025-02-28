@@ -1,0 +1,29 @@
+title: Suspicious System Network Connections Discovery Activity Indicator 099
+id: 9772aa57-63a3-88de-423e-2d42c138edfc
+status: experimental
+description: Detects process or activity patterns associated with System Network Connections Discovery (T1049).
+references:
+  - https://attack.mitre.org/techniques/T1049/
+author: DetectionForge
+date: 2024/08/01
+modified: 2025/04/01
+tags:
+  - attack.discovery
+  - attack.t1049
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'system'
+      - 'suspicious_pattern_99'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving system network connections discovery
+  - Security tools and monitoring agents performing similar actions
+level: medium
