@@ -1,0 +1,29 @@
+title: Suspicious File and Directory Discovery Activity Indicator 095
+id: 24bbf9ea-d1dd-1c9e-347c-b15f51c66985
+status: experimental
+description: Detects process or activity patterns associated with File and Directory Discovery (T1083).
+references:
+  - https://attack.mitre.org/techniques/T1083/
+author: DetectionForge
+date: 2024/07/28
+modified: 2025/04/01
+tags:
+  - attack.discovery
+  - attack.t1083
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'file'
+      - 'suspicious_pattern_95'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving file and directory discovery
+  - Security tools and monitoring agents performing similar actions
+level: medium
