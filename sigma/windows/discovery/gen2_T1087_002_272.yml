@@ -1,0 +1,29 @@
+title: Detection Pattern for DomainAccount Activity 272
+id: 64b04cb5-3b5b-7d37-d153-42bbce035443
+status: experimental
+description: Detects activity patterns associated with DomainAccount (T1087.002).
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2025/02/28
+modified: 2025/05/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domainaccount'
+      - 'pattern_272'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
