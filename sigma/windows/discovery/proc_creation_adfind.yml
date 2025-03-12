@@ -1,0 +1,27 @@
+title: AdFind Active Directory Recon
+id: 73a0f0c1-8b18-64c5-1732-a4c18ce61ef3
+status: stable
+description: Detects AdFind tool used for Active Directory enumeration
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2024/02/25
+modified: 2025/03/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\AdFind.exe'
+    CommandLine|contains:
+      - '-f'
+      - '-sc'
+      - 'objectcategory'
+  condition: selection
+falsepositives:
+  - Authorized AD audits
+  - Identity governance tools
+level: medium
