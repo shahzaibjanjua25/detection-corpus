@@ -1,0 +1,33 @@
+title: System Information Discovery via systeminfo or hostname
+id: b4c5d6e7-f8a9-0123-7890-234567890123
+status: stable
+description: Detects execution of common system information discovery utilities that are frequently used in early reconnaissance stages.
+references:
+  - https://attack.mitre.org/techniques/T1082/
+author: DetectionForge
+date: 2024/06/01
+modified: 2025/02/15
+tags:
+  - attack.discovery
+  - attack.t1082
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\systeminfo.exe'
+      - '\hostname.exe'
+      - '\whoami.exe'
+  filter_admin:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\cmd.exe'
+      - '\powershell.exe'
+    User|contains:
+      - 'ADMIN'
+  condition: selection and not filter_admin
+falsepositives:
+  - Helpdesk or administrative users running these commands interactively
+  - Inventory and asset management agents that collect system information
+level: low
