@@ -1,0 +1,27 @@
+title: Whoami Privilege Discovery
+id: 4a126684-991d-2420-26df-3dc01c047eda
+status: stable
+description: Detects whoami with elevated or all flags often used in post-exploitation
+references:
+  - https://attack.mitre.org/techniques/T1033/
+author: DetectionForge
+date: 2024/02/22
+modified: 2025/03/01
+tags:
+  - attack.discovery
+  - attack.t1033
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\whoami.exe'
+    CommandLine|contains:
+      - '/all'
+      - '/priv'
+      - '/groups'
+  condition: selection
+falsepositives:
+  - Administrative troubleshooting
+  - Login scripts
+level: medium
