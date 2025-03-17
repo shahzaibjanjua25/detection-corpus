@@ -1,0 +1,28 @@
+title: DomainAcct Pattern 5084
+id: e16b9f5d-c9ac-4848-a88c-d983efc1b52f
+status: experimental
+description: Detects patterns associated with DomainAcct (T1087.002).
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2024/05/24
+modified: 2025/08/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domainacct'
+      - 'x_5084'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for domainacct
+  - Security and monitoring tools
+level: medium
