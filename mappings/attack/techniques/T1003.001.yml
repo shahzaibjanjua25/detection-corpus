@@ -1,0 +1,9 @@
+technique: T1003.001
+name: OS Credential Dumping - LSASS Memory
+tactic: credential-access
+rules:
+  - LSASS Memory Dump via Procdump or Similar Tools
+  - Mimikatz Command Line Indicators
+  - Malware_Mimikatz
+coverage_status: covered
+notes: Strong coverage via process creation and YARA; registry and memory access paths also monitored.
