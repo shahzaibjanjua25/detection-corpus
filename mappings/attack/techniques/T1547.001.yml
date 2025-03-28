@@ -1,0 +1,7 @@
+technique: T1547.001
+name: Boot or Logon Autostart Execution - Registry Run Keys
+tactic: persistence
+rules:
+  - Suspicious Modification of Run or RunOnce Registry Keys
+coverage_status: covered
+notes: Focuses on non-installer processes writing Run keys.
