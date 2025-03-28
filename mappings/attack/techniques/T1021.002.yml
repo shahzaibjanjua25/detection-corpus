@@ -1,0 +1,7 @@
+technique: T1021.002
+name: Remote Services - SMB/Windows Admin Shares
+tactic: lateral-movement
+rules:
+  - PsExec or Similar Service Installation for Lateral Movement
+coverage_status: partial
+notes: Service installation covered; pure SMB session creation requires additional network or security event rules.
