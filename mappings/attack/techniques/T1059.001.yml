@@ -1,0 +1,8 @@
+technique: T1059.001
+name: Command and Scripting Interpreter - PowerShell
+tactic: execution
+rules:
+  - PowerShell Encoded Command Execution
+  - Malware_Emotet_Loader
+coverage_status: covered
+notes: Encoded command and common loader patterns covered; further script-block logging recommended.
