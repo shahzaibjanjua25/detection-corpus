@@ -1,0 +1,8 @@
+technique: T1078.004
+name: Valid Accounts - Cloud Accounts
+tactic: initial-access
+rules:
+  - AWS Console Login Without MFA
+  - Azure AD Risky Sign-in Detected
+coverage_status: covered
+notes: Focus on MFA absence and risk signals; expand with impossible-travel and unusual location rules.
