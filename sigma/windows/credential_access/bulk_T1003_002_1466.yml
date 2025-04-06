@@ -1,0 +1,29 @@
+title: Security Account Manager Suspicious Activity Pattern 1466
+id: c5df4f80-e763-4049-a9fe-0e09a682b2f5
+status: experimental
+description: Detects process or registry activity patterns associated with Security Account Manager (T1003.002).
+references:
+  - https://attack.mitre.org/techniques/T1003/002/
+author: DetectionForge
+date: 2024/03/07
+modified: 2025/06/01
+tags:
+  - attack.credential-access
+  - attack.t1003.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'security'
+      - 'bulk_pattern_1466'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving security account manager
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
