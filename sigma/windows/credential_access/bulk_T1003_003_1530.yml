@@ -1,0 +1,29 @@
+title: NTDS Suspicious Activity Pattern 1530
+id: fe822a72-cb65-4d31-c195-a4e115c43fe2
+status: experimental
+description: Detects process or registry activity patterns associated with NTDS (T1003.003).
+references:
+  - https://attack.mitre.org/techniques/T1003/003/
+author: DetectionForge
+date: 2024/05/10
+modified: 2025/06/01
+tags:
+  - attack.credential-access
+  - attack.t1003.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'ntds'
+      - 'bulk_pattern_1530'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving ntds
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
