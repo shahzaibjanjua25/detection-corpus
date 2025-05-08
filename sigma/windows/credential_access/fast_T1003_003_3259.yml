@@ -1,0 +1,29 @@
+title: NTDS Activity Indicator 3259
+id: fde1f925-23f0-44b9-aa00-50012ecbb16f
+status: experimental
+description: Detects activity patterns associated with NTDS (T1003.003).
+references:
+  - https://attack.mitre.org/techniques/T1003/003/
+author: DetectionForge
+date: 2024/10/17
+modified: 2025/07/01
+tags:
+  - attack.credential-access
+  - attack.t1003.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'ntds'
+      - 'fast_3259'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving ntds
+  - Security tools and monitoring agents
+level: medium
