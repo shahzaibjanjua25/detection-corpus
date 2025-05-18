@@ -1,0 +1,29 @@
+title: Suspicious Security Account Manager Activity Indicator 143
+id: 6b9a9eae-5eef-67d9-605b-8777cba8cc79
+status: experimental
+description: Detects process or activity patterns associated with Security Account Manager (T1003.002).
+references:
+  - https://attack.mitre.org/techniques/T1003/002/
+author: DetectionForge
+date: 2024/09/14
+modified: 2025/04/01
+tags:
+  - attack.credential-access
+  - attack.t1003.002
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'security'
+      - 'suspicious_pattern_143'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving security account manager
+  - Security tools and monitoring agents performing similar actions
+level: medium
