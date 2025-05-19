@@ -1,0 +1,29 @@
+title: Suspicious Security Account Manager Activity Indicator 206
+id: fcfbc0da-6595-1ff0-6a1f-f09a56bc2096
+status: experimental
+description: Detects process or activity patterns associated with Security Account Manager (T1003.002).
+references:
+  - https://attack.mitre.org/techniques/T1003/002/
+author: DetectionForge
+date: 2024/11/16
+modified: 2025/04/01
+tags:
+  - attack.credential-access
+  - attack.t1003.002
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'security'
+      - 'suspicious_pattern_206'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving security account manager
+  - Security tools and monitoring agents performing similar actions
+level: medium
