@@ -1,0 +1,26 @@
+title: Comsvcs MiniDump of LSASS
+id: 50f63d15-3fec-fa6b-063c-a0981a632faa
+status: stable
+description: Detects rundll32 comsvcs MiniDump technique
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectionForge
+date: 2024/01/16
+modified: 2025/03/01
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\rundll32.exe'
+    CommandLine|contains|all:
+      - 'comsvcs'
+      - 'MiniDump'
+  condition: selection
+falsepositives:
+  - Rare legitimate diagnostic use
+  - Approved IR tooling
+level: high
