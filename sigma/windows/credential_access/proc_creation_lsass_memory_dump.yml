@@ -1,0 +1,42 @@
+title: LSASS Memory Dump via Procdump or Similar Tools
+id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+status: stable
+description: Detects creation of a process that is commonly used to dump LSASS memory (procdump, comsvcs, etc.) which is a frequent credential dumping technique.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+  - https://docs.microsoft.com/en-us/sysinternals/downloads/procdump
+author: DetectionForge
+date: 2024/03/12
+modified: 2025/01/15
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_procdump:
+    Image|endswith:
+      - '\procdump.exe'
+      - '\procdump64.exe'
+    CommandLine|contains:
+      - 'lsass'
+      - '-ma'
+  selection_comsvcs:
+    Image|endswith: '\rundll32.exe'
+    CommandLine|contains|all:
+      - 'comsvcs.dll'
+      - 'MiniDump'
+  selection_taskmgr:
+    Image|endswith: '\taskmgr.exe'
+    CommandLine|contains: 'lsass'
+  filter_legitimate_sysinternals:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\cmd.exe'
+    CommandLine|contains: 'Sysinternals'
+  condition: (selection_procdump or selection_comsvcs or selection_taskmgr) and not filter_legitimate_sysinternals
+falsepositives:
+  - Legitimate memory dump collection by incident responders using Sysinternals Procdump
+  - Some EDR or backup products that create process dumps of lsass for analysis
+level: high
