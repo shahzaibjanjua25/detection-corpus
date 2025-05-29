@@ -1,0 +1,27 @@
+title: SharpDPAPI Credential Extraction
+id: 92779255-6e94-d6b8-ab8e-91067293d1b2
+status: stable
+description: Detects SharpDPAPI and similar DPAPI master key / credential extraction
+references:
+  - https://attack.mitre.org/techniques/T1555/003/
+author: DetectionForge
+date: 2024/01/22
+modified: 2025/03/01
+tags:
+  - attack.credential-access
+  - attack.t1555.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'SharpDPAPI'
+      - 'MasterKeys'
+      - 'Triage'
+      - 'Blob'
+  condition: selection
+falsepositives:
+  - Authorized DFIR activity
+  - Red team tooling in lab
+level: high
