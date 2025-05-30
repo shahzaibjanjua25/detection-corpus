@@ -1,0 +1,28 @@
+title: LSASS Pattern 5022
+id: ef4df84e-a2b3-4337-ae7d-968649031bbd
+status: experimental
+description: Detects patterns associated with LSASS (T1003.001).
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectionForge
+date: 2024/03/23
+modified: 2025/08/01
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'lsass'
+      - 'x_5022'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for lsass
+  - Security and monitoring tools
+level: medium
