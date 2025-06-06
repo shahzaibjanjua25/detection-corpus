@@ -1,0 +1,28 @@
+title: LSASS Indicator 7124
+id: 3900de34-dcd7-4c9c-af49-e4c6a5bdbf43
+status: experimental
+description: Detects patterns associated with LSASS (T1003.001).
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectionForge
+date: 2025/02/19
+modified: 2025/09/01
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'lsass'
+      - 'z_7124'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for lsass
+  - Security and monitoring tools
+level: medium
