@@ -1,0 +1,28 @@
+title: LSASS Indicator 7154
+id: 24699346-d0e1-41e3-a9aa-9dfeffbc7776
+status: experimental
+description: Detects patterns associated with LSASS (T1003.001).
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectionForge
+date: 2025/03/21
+modified: 2025/09/01
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'lsass'
+      - 'z_7154'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for lsass
+  - Security and monitoring tools
+level: medium
