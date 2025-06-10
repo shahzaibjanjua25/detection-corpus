@@ -1,0 +1,29 @@
+title: Obfuscated Files or Information Suspicious Activity Pattern 1602
+id: ce819703-59f5-4e4c-179f-240585046c42
+status: experimental
+description: Detects process or registry activity patterns associated with Obfuscated Files or Information (T1027).
+references:
+  - https://attack.mitre.org/techniques/T1027/
+author: DetectionForge
+date: 2024/07/21
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1027
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'obfuscated'
+      - 'bulk_pattern_1602'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving obfuscated files or information
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
