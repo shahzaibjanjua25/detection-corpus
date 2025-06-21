@@ -1,0 +1,29 @@
+title: Match Legitimate Name or Location Suspicious Activity Pattern 1668
+id: 27919a60-b473-43da-1427-3172144e8471
+status: experimental
+description: Detects process or registry activity patterns associated with Match Legitimate Name or Location (T1036.005).
+references:
+  - https://attack.mitre.org/techniques/T1036/005/
+author: DetectionForge
+date: 2024/09/25
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1036.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'match'
+      - 'bulk_pattern_1668'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving match legitimate name or location
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
