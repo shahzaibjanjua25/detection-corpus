@@ -1,0 +1,29 @@
+title: Control Panel Suspicious Activity Pattern 2146
+id: 7ad915f0-dbde-4931-0de6-1a5cde0821af
+status: experimental
+description: Detects process or registry activity patterns associated with Control Panel (T1218.002).
+references:
+  - https://attack.mitre.org/techniques/T1218/002/
+author: DetectionForge
+date: 2024/02/16
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'control'
+      - 'bulk_pattern_2146'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving control panel
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
