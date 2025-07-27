@@ -1,0 +1,29 @@
+title: InstallUtil Suspicious Activity Pattern 1014
+id: 467734ce-0631-465d-0d2f-d74e7c9373b0
+status: experimental
+description: Detects process or registry activity patterns associated with InstallUtil (T1218.004).
+references:
+  - https://attack.mitre.org/techniques/T1218/004/
+author: DetectionForge
+date: 2024/11/10
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'installutil'
+      - 'bulk_pattern_1014'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving installutil
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
