@@ -1,0 +1,29 @@
+title: Mshta Suspicious Activity Pattern 1204
+id: c33b80e4-8c18-45f4-edb2-6c12cf29ab75
+status: experimental
+description: Detects process or registry activity patterns associated with Mshta (T1218.005).
+references:
+  - https://attack.mitre.org/techniques/T1218/005/
+author: DetectionForge
+date: 2025/05/19
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'mshta'
+      - 'bulk_pattern_1204'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving mshta
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
