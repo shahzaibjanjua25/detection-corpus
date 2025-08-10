@@ -1,0 +1,29 @@
+title: Regsvr32 Suspicious Activity Pattern 1646
+id: 6c769a45-c0dd-44c4-8406-c734aa33f8e4
+status: experimental
+description: Detects process or registry activity patterns associated with Regsvr32 (T1218.010).
+references:
+  - https://attack.mitre.org/techniques/T1218/010/
+author: DetectionForge
+date: 2024/09/03
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.010
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'regsvr32'
+      - 'bulk_pattern_1646'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving regsvr32
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
