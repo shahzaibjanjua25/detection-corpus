@@ -1,0 +1,29 @@
+title: Rundll32 Suspicious Activity Pattern 2025
+id: 1d9da3ba-773a-4aad-dd82-9bc4e2fff9fa
+status: experimental
+description: Detects process or registry activity patterns associated with Rundll32 (T1218.011).
+references:
+  - https://attack.mitre.org/techniques/T1218/011/
+author: DetectionForge
+date: 2025/09/17
+modified: 2025/06/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.011
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'rundll32'
+      - 'bulk_pattern_2025'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving rundll32
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
