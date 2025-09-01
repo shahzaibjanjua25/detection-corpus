@@ -1,0 +1,29 @@
+title: Injection Activity Indicator 3212
+id: 0e28f329-8cee-4282-a8fb-8b0265834371
+status: experimental
+description: Detects activity patterns associated with Injection (T1055).
+references:
+  - https://attack.mitre.org/techniques/T1055/
+author: DetectionForge
+date: 2024/08/31
+modified: 2025/07/01
+tags:
+  - attack.defense-evasion
+  - attack.t1055
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'injection'
+      - 'fast_3212'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving injection
+  - Security tools and monitoring agents
+level: medium
