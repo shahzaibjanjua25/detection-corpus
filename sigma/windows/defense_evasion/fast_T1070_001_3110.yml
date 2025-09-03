@@ -1,0 +1,29 @@
+title: ClearLogs Activity Indicator 3110
+id: 0d22b422-a6ad-4d7f-acc3-99869494da37
+status: experimental
+description: Detects activity patterns associated with ClearLogs (T1070.001).
+references:
+  - https://attack.mitre.org/techniques/T1070/001/
+author: DetectionForge
+date: 2024/05/21
+modified: 2025/07/01
+tags:
+  - attack.defense-evasion
+  - attack.t1070.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'clearlogs'
+      - 'fast_3110'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving clearlogs
+  - Security tools and monitoring agents
+level: medium
