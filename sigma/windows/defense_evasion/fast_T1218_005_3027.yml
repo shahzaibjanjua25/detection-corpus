@@ -1,0 +1,29 @@
+title: Mshta Activity Indicator 3027
+id: 464bf1e4-c72d-4b94-a0e5-f6256d2f1a45
+status: experimental
+description: Detects activity patterns associated with Mshta (T1218.005).
+references:
+  - https://attack.mitre.org/techniques/T1218/005/
+author: DetectionForge
+date: 2024/02/28
+modified: 2025/07/01
+tags:
+  - attack.defense-evasion
+  - attack.t1218.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'mshta'
+      - 'fast_3027'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving mshta
+  - Security tools and monitoring agents
+level: medium
