@@ -1,0 +1,29 @@
+title: DisableDefender Activity Indicator 3236
+id: e030ee6f-8470-48c8-a7b3-780949cc7a1e
+status: experimental
+description: Detects activity patterns associated with DisableDefender (T1562.001).
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+author: DetectionForge
+date: 2024/09/24
+modified: 2025/07/01
+tags:
+  - attack.defense-evasion
+  - attack.t1562.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'disabledefender'
+      - 'fast_3236'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving disabledefender
+  - Security tools and monitoring agents
+level: medium
