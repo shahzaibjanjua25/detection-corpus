@@ -1,0 +1,29 @@
+title: Suspicious Match Legitimate Name or Location Activity Indicator 030
+id: 80578d69-e92f-0032-d22f-2fe84786e142
+status: experimental
+description: Detects process or activity patterns associated with Match Legitimate Name or Location (T1036.005).
+references:
+  - https://attack.mitre.org/techniques/T1036/005/
+author: DetectionForge
+date: 2024/05/24
+modified: 2025/04/01
+tags:
+  - attack.defense-evasion
+  - attack.t1036.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'match'
+      - 'suspicious_pattern_30'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving match legitimate name or location
+  - Security tools and monitoring agents performing similar actions
+level: medium
