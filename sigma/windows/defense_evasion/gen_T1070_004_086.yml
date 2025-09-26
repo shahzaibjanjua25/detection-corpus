@@ -1,0 +1,29 @@
+title: Suspicious File Deletion Activity Indicator 086
+id: 11b4d4b3-475c-2935-2702-0c6b5a98af03
+status: experimental
+description: Detects process or activity patterns associated with File Deletion (T1070.004).
+references:
+  - https://attack.mitre.org/techniques/T1070/004/
+author: DetectionForge
+date: 2024/07/19
+modified: 2025/04/01
+tags:
+  - attack.defense-evasion
+  - attack.t1070.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'file'
+      - 'suspicious_pattern_86'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving file deletion
+  - Security tools and monitoring agents performing similar actions
+level: medium
