@@ -1,0 +1,29 @@
+title: Suspicious Timestomp Activity Indicator 024
+id: fbf4db03-93e6-c296-718c-b9fcf38008a4
+status: experimental
+description: Detects process or activity patterns associated with Timestomp (T1070.006).
+references:
+  - https://attack.mitre.org/techniques/T1070/006/
+author: DetectionForge
+date: 2024/05/18
+modified: 2025/04/01
+tags:
+  - attack.defense-evasion
+  - attack.t1070.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'timestomp'
+      - 'suspicious_pattern_24'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving timestomp
+  - Security tools and monitoring agents performing similar actions
+level: medium
