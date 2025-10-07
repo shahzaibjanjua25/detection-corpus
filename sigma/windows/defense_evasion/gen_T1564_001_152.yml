@@ -1,0 +1,29 @@
+title: Suspicious Hidden Files and Directories Activity Indicator 152
+id: 4c043ee3-0c1a-4927-e9f2-26e04fab7a5d
+status: experimental
+description: Detects process or activity patterns associated with Hidden Files and Directories (T1564.001).
+references:
+  - https://attack.mitre.org/techniques/T1564/001/
+author: DetectionForge
+date: 2024/09/23
+modified: 2025/04/01
+tags:
+  - attack.defense-evasion
+  - attack.t1564.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'hidden'
+      - 'suspicious_pattern_152'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving hidden files and directories
+  - Security tools and monitoring agents performing similar actions
+level: medium
