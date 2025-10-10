@@ -1,0 +1,29 @@
+title: Detection Pattern for ClearLogs Activity 331
+id: f022ad84-0a6e-2583-cfa1-237af959e7fd
+status: experimental
+description: Detects activity patterns associated with ClearLogs (T1070.001).
+references:
+  - https://attack.mitre.org/techniques/T1070/001/
+author: DetectionForge
+date: 2025/04/28
+modified: 2025/05/01
+tags:
+  - attack.defense-evasion
+  - attack.t1070.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'clearlogs'
+      - 'pattern_331'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
