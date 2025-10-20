@@ -1,0 +1,33 @@
+title: Potential Process Hollowing Indicators
+id: f2a3b4c5-d6e7-8901-5678-012345678901
+status: experimental
+description: Detects process creation patterns commonly associated with process hollowing (unusual parent-child relationships combined with suspended process creation).
+references:
+  - https://attack.mitre.org/techniques/T1055/012/
+author: DetectionForge
+date: 2024/05/10
+modified: 2025/02/20
+tags:
+  - attack.defense-evasion
+  - attack.t1055.012
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'CREATE_SUSPENDED'
+      - '0x4'
+    Image|endswith:
+      - '\svchost.exe'
+      - '\explorer.exe'
+      - '\runtimebroker.exe'
+  filter_known:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\wininit.exe'
+  condition: selection and not filter_known
+falsepositives:
+  - Some legitimate software that creates suspended processes for injection-based loading (rare)
+  - Debugging tools that intentionally create suspended processes
+level: medium
