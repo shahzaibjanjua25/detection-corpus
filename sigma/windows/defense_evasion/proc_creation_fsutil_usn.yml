@@ -1,0 +1,26 @@
+title: USN Journal Deletion
+id: 9faa29b3-e2c4-ccc3-04af-e129699a92f8
+status: stable
+description: Detects deletion or modification of the USN journal
+references:
+  - https://attack.mitre.org/techniques/T1070/004/
+author: DetectionForge
+date: 2024/02/14
+modified: 2025/03/01
+tags:
+  - attack.defense-evasion
+  - attack.t1070.004
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\fsutil.exe'
+    CommandLine|contains:
+      - 'usn'
+      - 'deletejournal'
+  condition: selection
+falsepositives:
+  - Storage management operations
+  - Disk cleanup utilities
+level: medium
