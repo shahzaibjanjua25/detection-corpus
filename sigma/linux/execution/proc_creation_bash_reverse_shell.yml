@@ -1,0 +1,26 @@
+title: Bash Reverse Shell Indicators
+id: dad98a09-7975-bf43-852a-194ee833b9b5
+status: stable
+description: Detects common bash reverse shell one-liners
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: DetectionForge
+date: 2024/08/02
+modified: 2025/03/15
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - '/dev/tcp/'
+      - 'bash -i'
+      - '>& /dev/tcp'
+  condition: selection
+falsepositives:
+  - Network troubleshooting scripts
+  - Authorized penetration tests
+level: high
