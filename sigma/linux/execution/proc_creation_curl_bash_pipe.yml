@@ -1,0 +1,30 @@
+title: Curl or Wget Piped to Bash
+id: e7f8a9b0-c1d2-3456-0123-567890123456
+status: stable
+description: Detects the classic curl|bash or wget|bash pattern used to download and immediately execute remote scripts.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: DetectionForge
+date: 2024/07/05
+modified: 2025/01/12
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+    CommandLine|contains:
+      - '| bash'
+      - '| sh'
+      - '|bash'
+      - '|sh'
+  condition: selection
+falsepositives:
+  - Legitimate software installation instructions that use curl|bash (common in development environments)
+  - Automated provisioning scripts that follow the same pattern
+level: medium
