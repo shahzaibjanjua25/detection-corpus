@@ -1,0 +1,27 @@
+title: Python Reverse Shell
+id: f5423739-ca21-df20-5850-9dc7020bd5fb
+status: stable
+description: Detects Python reverse shell patterns
+references:
+  - https://attack.mitre.org/techniques/T1059/006/
+author: DetectionForge
+date: 2024/08/03
+modified: 2025/03/15
+tags:
+  - attack.execution
+  - attack.t1059.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'python'
+      - 'socket'
+      - 'connect'
+      - 'subprocess'
+  condition: selection
+falsepositives:
+  - Development and debugging
+  - Authorized testing
+level: high
