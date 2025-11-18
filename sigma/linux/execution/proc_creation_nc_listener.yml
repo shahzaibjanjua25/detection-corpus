@@ -1,0 +1,30 @@
+title: Netcat Listener or Connect
+id: 0728330f-c37d-932e-3292-7b2be95f3a88
+status: stable
+description: Detects netcat used in listener or connect mode commonly for shells
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: DetectionForge
+date: 2024/08/04
+modified: 2025/03/15
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/nc'
+      - '/ncat'
+      - '/netcat'
+    CommandLine|contains:
+      - '-l'
+      - '-e'
+      - '-c'
+  condition: selection
+falsepositives:
+  - Network debugging by administrators
+  - Legacy monitoring
+level: high
