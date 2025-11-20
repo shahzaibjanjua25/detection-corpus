@@ -1,0 +1,25 @@
+title: LD_PRELOAD Hijacking
+id: 57ca6c2d-bba6-6b5e-5339-1d496e0c2f66
+status: stable
+description: Detects use of LD_PRELOAD for shared library injection
+references:
+  - https://attack.mitre.org/techniques/T1574/006/
+author: DetectionForge
+date: 2024/08/08
+modified: 2025/03/15
+tags:
+  - attack.persistence
+  - attack.t1574.006
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'LD_PRELOAD'
+      - 'ld.so.preload'
+  condition: selection
+falsepositives:
+  - Debugging and profiling tools
+  - Some security products
+level: high
