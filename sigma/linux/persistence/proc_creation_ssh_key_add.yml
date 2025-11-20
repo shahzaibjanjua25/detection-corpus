@@ -1,0 +1,28 @@
+title: SSH Authorized Keys Modification
+id: a3483866-3eaa-1570-9227-94422f2dc65a
+status: stable
+description: Detects modification of authorized_keys files
+references:
+  - https://attack.mitre.org/techniques/T1098/004/
+author: DetectionForge
+date: 2024/08/07
+modified: 2025/03/15
+tags:
+  - attack.persistence
+  - attack.t1098.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'authorized_keys'
+      - '>>'
+      - 'echo'
+      - 'ssh-rsa'
+      - 'ssh-ed25519'
+  condition: selection
+falsepositives:
+  - Legitimate user key management
+  - Configuration management tools
+level: high
