@@ -1,0 +1,27 @@
+title: Cron Reverse Shell Persistence
+id: 615fc45e-ee3a-b998-e6e8-f122f4c6b74f
+status: stable
+description: Detects crontab entries containing reverse shell patterns
+references:
+  - https://attack.mitre.org/techniques/T1053/003/
+author: DetectionForge
+date: 2024/08/06
+modified: 2025/03/15
+tags:
+  - attack.persistence
+  - attack.t1053.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'crontab'
+      - '/dev/tcp'
+      - 'bash -i'
+      - 'nc -'
+  condition: selection
+falsepositives:
+  - Misconfigured monitoring jobs
+  - Authorized persistence testing
+level: high
