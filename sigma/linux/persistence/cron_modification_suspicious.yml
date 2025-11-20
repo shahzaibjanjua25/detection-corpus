@@ -1,0 +1,31 @@
+title: Suspicious Cron Job Modification
+id: f8a9b0c1-d2e3-4567-1234-678901234567
+status: test
+description: Detects modification of user or system crontab entries that contain network download or reverse-shell like content.
+references:
+  - https://attack.mitre.org/techniques/T1053/003/
+author: DetectionForge
+date: 2024/07/10
+modified: 2025/02/18
+tags:
+  - attack.persistence
+  - attack.t1053.003
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith:
+      - '/crontab'
+      - '/cron'
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+      - 'bash -i'
+      - '/dev/tcp'
+      - 'nc -'
+  condition: selection
+falsepositives:
+  - System administrators adding monitoring or backup jobs that use curl
+  - Configuration management tools that manage cron entries
+level: high
