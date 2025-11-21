@@ -1,0 +1,27 @@
+title: PrintSpoofer / SpoolSample Indicators
+id: c100d64b-d6de-2632-c88a-c7ea782ea184
+status: stable
+description: Detects PrintSpoofer and related printer spooler privilege escalation tools
+references:
+  - https://attack.mitre.org/techniques/T1134/001/
+author: DetectionForge
+date: 2024/02/12
+modified: 2025/03/01
+tags:
+  - attack.privilege-escalation
+  - attack.t1134.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'PrintSpoofer'
+      - 'SpoolSample'
+      - 'GodPotato'
+      - 'SweetPotato'
+  condition: selection
+falsepositives:
+  - Red team assessments
+  - Security research
+level: high
