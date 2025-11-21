@@ -1,0 +1,23 @@
+title: Azure AD App Role Assignment
+id: 2c089d2f-b76c-2056-84c0-d9d451081047
+status: test
+description: Detects assignment of application roles that may grant elevated access
+references:
+  - https://attack.mitre.org/techniques/T1098/
+author: DetectionForge
+date: 2024/11/14
+modified: 2025/03/20
+tags:
+  - attack.persistence
+  - attack.t1098
+logsource:
+  category: azure_activity
+  product: azure
+detection:
+  selection:
+    operationName|contains: 'Add app role assignment'
+  condition: selection
+falsepositives:
+  - Legitimate application onboarding
+  - Identity governance processes
+level: medium
