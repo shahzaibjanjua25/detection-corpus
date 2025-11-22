@@ -1,0 +1,28 @@
+title: UAC Bypass via Fodhelper
+id: e1f2a3b4-c5d6-7890-4567-901234567890
+status: stable
+description: Detects the fodhelper.exe UAC bypass technique that abuses the ms-settings protocol handler and registry auto-elevate behavior.
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+  - https://gist.github.com/api0cradle/d4aa4e07f927949f3860363ed2902076
+author: DetectionForge
+date: 2024/05/01
+modified: 2025/01/18
+tags:
+  - attack.privilege-escalation
+  - attack.defense-evasion
+  - attack.t1548.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    ParentImage|endswith: '\fodhelper.exe'
+    IntegrityLevel:
+      - 'High'
+      - 'System'
+  condition: selection
+falsepositives:
+  - Extremely rare; fodhelper is not normally a parent of high-integrity processes outside of this technique
+  - Custom accessibility or settings applications that legitimately chain through fodhelper (very uncommon)
+level: high
