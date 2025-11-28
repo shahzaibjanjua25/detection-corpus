@@ -1,0 +1,24 @@
+title: AWS Console Login Failures
+id: 853e19b9-7d23-84f9-5bdd-e8c969c45587
+status: test
+description: Detects repeated failed AWS console login attempts
+references:
+  - https://attack.mitre.org/techniques/T1110/
+author: DetectionForge
+date: 2024/11/13
+modified: 2025/03/20
+tags:
+  - attack.credential-access
+  - attack.t1110
+logsource:
+  category: cloudtrail
+  product: aws
+detection:
+  selection:
+    eventName: 'ConsoleLogin'
+    errorMessage|contains: 'Failed'
+  condition: selection
+falsepositives:
+  - Users mistyping passwords
+  - Password spray testing by security team
+level: medium
