@@ -1,0 +1,27 @@
+title: Iptables Flush or Disable
+id: a2996720-bcc4-5e16-39fe-90883704ea50
+status: stable
+description: Detects attempts to flush or disable host firewall rules
+references:
+  - https://attack.mitre.org/techniques/T1562/004/
+author: DetectionForge
+date: 2024/08/09
+modified: 2025/03/15
+tags:
+  - attack.defense-evasion
+  - attack.t1562.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    CommandLine|contains:
+      - 'iptables -F'
+      - 'iptables --flush'
+      - 'ufw disable'
+      - 'firewall-cmd --reload'
+  condition: selection
+falsepositives:
+  - Network reconfiguration by admins
+  - Container networking setup
+level: high
