@@ -1,0 +1,29 @@
+title: Chmod on Sensitive Binaries
+id: 9ddad58e-2a69-5fa0-e6d4-5c525a4b8ace
+status: stable
+description: Detects chmod making binaries world-writable or setuid in suspicious paths
+references:
+  - https://attack.mitre.org/techniques/T1222/002/
+author: DetectionForge
+date: 2024/08/05
+modified: 2025/03/15
+tags:
+  - attack.defense-evasion
+  - attack.t1222.002
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection:
+    Image|endswith: '/chmod'
+    CommandLine|contains:
+      - '+x'
+      - '4755'
+      - '777'
+      - '/tmp'
+      - '/dev/shm'
+  condition: selection
+falsepositives:
+  - Software installation scripts
+  - Container entrypoints
+level: high
