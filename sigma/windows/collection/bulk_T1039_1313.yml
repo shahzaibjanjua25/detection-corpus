@@ -1,0 +1,29 @@
+title: Data from Network Shared Drive Suspicious Activity Pattern 1313
+id: 4fdf1845-a835-469a-250f-f25898e71d51
+status: experimental
+description: Detects process or registry activity patterns associated with Data from Network Shared Drive (T1039).
+references:
+  - https://attack.mitre.org/techniques/T1039/
+author: DetectionForge
+date: 2025/09/05
+modified: 2025/06/01
+tags:
+  - attack.collection
+  - attack.t1039
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'data'
+      - 'bulk_pattern_1313'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving data from network shared drive
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
