@@ -1,0 +1,29 @@
+title: Screen Capture Suspicious Activity Pattern 1309
+id: d2282f4d-ee49-4a64-d766-e4536b1243b6
+status: experimental
+description: Detects process or registry activity patterns associated with Screen Capture (T1113).
+references:
+  - https://attack.mitre.org/techniques/T1113/
+author: DetectionForge
+date: 2025/09/01
+modified: 2025/06/01
+tags:
+  - attack.collection
+  - attack.t1113
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'screen'
+      - 'bulk_pattern_1309'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving screen capture
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
