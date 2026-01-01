@@ -1,0 +1,29 @@
+title: Clipboard Data Suspicious Activity Pattern 1560
+id: 5d7c9dab-6430-45fc-0773-9445f5df2922
+status: experimental
+description: Detects process or registry activity patterns associated with Clipboard Data (T1115).
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: DetectionForge
+date: 2024/06/09
+modified: 2025/06/01
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'clipboard'
+      - 'bulk_pattern_1560'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving clipboard data
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
