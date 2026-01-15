@@ -1,0 +1,29 @@
+title: Clipboard Activity Indicator 3743
+id: 9a2b306d-0a9b-45dc-ad2e-d3f4ced83aa5
+status: experimental
+description: Detects activity patterns associated with Clipboard (T1115).
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: DetectionForge
+date: 2024/06/23
+modified: 2025/07/01
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'clipboard'
+      - 'fast_3743'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving clipboard
+  - Security tools and monitoring agents
+level: medium
