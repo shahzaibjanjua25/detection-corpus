@@ -1,0 +1,29 @@
+title: Archive Activity Indicator 3619
+id: df40afbb-deb9-45d1-ae25-375e9824a3e5
+status: experimental
+description: Detects activity patterns associated with Archive (T1560.001).
+references:
+  - https://attack.mitre.org/techniques/T1560/001/
+author: DetectionForge
+date: 2024/02/20
+modified: 2025/07/01
+tags:
+  - attack.collection
+  - attack.t1560.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'archive'
+      - 'fast_3619'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving archive
+  - Security tools and monitoring agents
+level: medium
