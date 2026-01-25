@@ -1,0 +1,29 @@
+title: Archive Activity Indicator 3644
+id: febe3eea-cce2-4687-a6e2-141eea1fa8f4
+status: experimental
+description: Detects activity patterns associated with Archive (T1560.001).
+references:
+  - https://attack.mitre.org/techniques/T1560/001/
+author: DetectionForge
+date: 2024/03/16
+modified: 2025/07/01
+tags:
+  - attack.collection
+  - attack.t1560.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'archive'
+      - 'fast_3644'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving archive
+  - Security tools and monitoring agents
+level: medium
