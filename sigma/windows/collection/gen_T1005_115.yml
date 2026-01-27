@@ -1,0 +1,29 @@
+title: Suspicious Data from Local System Activity Indicator 115
+id: 5d194c2f-dd7d-eaea-137d-9b119a3da41b
+status: experimental
+description: Detects process or activity patterns associated with Data from Local System (T1005).
+references:
+  - https://attack.mitre.org/techniques/T1005/
+author: DetectionForge
+date: 2024/08/17
+modified: 2025/04/01
+tags:
+  - attack.collection
+  - attack.t1005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'data'
+      - 'suspicious_pattern_115'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving data from local system
+  - Security tools and monitoring agents performing similar actions
+level: medium
