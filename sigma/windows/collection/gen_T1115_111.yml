@@ -1,0 +1,29 @@
+title: Suspicious Clipboard Data Activity Indicator 111
+id: e3b5ecee-57f4-5a15-3d96-8af269529e1a
+status: experimental
+description: Detects process or activity patterns associated with Clipboard Data (T1115).
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: DetectionForge
+date: 2024/08/13
+modified: 2025/04/01
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'clipboard'
+      - 'suspicious_pattern_111'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving clipboard data
+  - Security tools and monitoring agents performing similar actions
+level: medium
