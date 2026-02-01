@@ -1,0 +1,29 @@
+title: Suspicious Clipboard Access via PowerShell
+id: c7d8e9f0-a1b2-3456-0123-567890123456
+status: experimental
+description: Detects PowerShell commands that interact with the Windows clipboard, a technique used for collection of sensitive data.
+references:
+  - https://attack.mitre.org/techniques/T1115/
+author: DetectionForge
+date: 2024/10/01
+modified: 2025/01/08
+tags:
+  - attack.collection
+  - attack.t1115
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'Get-Clipboard'
+      - 'Set-Clipboard'
+      - 'Windows.Clipboard'
+  condition: selection
+falsepositives:
+  - Legitimate administrative or productivity scripts that manage clipboard content
+  - Accessibility tools
+level: low
