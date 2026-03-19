@@ -1,0 +1,29 @@
+title: Visual Basic Suspicious Activity Pattern 1388
+id: 307444fc-fa8c-4832-bf98-3c9719fb6827
+status: experimental
+description: Detects process or registry activity patterns associated with Visual Basic (T1059.005).
+references:
+  - https://attack.mitre.org/techniques/T1059/005/
+author: DetectionForge
+date: 2025/11/19
+modified: 2025/06/01
+tags:
+  - attack.execution
+  - attack.t1059.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'visual'
+      - 'bulk_pattern_1388'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving visual basic
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
