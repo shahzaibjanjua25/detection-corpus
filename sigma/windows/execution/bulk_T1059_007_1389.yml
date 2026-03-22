@@ -1,0 +1,29 @@
+title: JavaScript Suspicious Activity Pattern 1389
+id: 3e71bec1-caef-468f-7511-086d9e922286
+status: experimental
+description: Detects process or registry activity patterns associated with JavaScript (T1059.007).
+references:
+  - https://attack.mitre.org/techniques/T1059/007/
+author: DetectionForge
+date: 2025/11/20
+modified: 2025/06/01
+tags:
+  - attack.execution
+  - attack.t1059.007
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'javascript'
+      - 'bulk_pattern_1389'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving javascript
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
