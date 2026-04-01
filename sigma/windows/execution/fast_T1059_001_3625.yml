@@ -1,0 +1,29 @@
+title: PowerShell Activity Indicator 3625
+id: 4ab6d699-4474-4d4b-a092-85f8a3c3a664
+status: experimental
+description: Detects activity patterns associated with PowerShell (T1059.001).
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2024/02/26
+modified: 2025/07/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'powershell'
+      - 'fast_3625'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving powershell
+  - Security tools and monitoring agents
+level: medium
