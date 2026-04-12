@@ -1,0 +1,29 @@
+title: Cmd Activity Indicator 3601
+id: 7e7a73c9-9b41-4d94-aa38-fd1c814c150f
+status: experimental
+description: Detects activity patterns associated with Cmd (T1059.003).
+references:
+  - https://attack.mitre.org/techniques/T1059/003/
+author: DetectionForge
+date: 2024/02/02
+modified: 2025/07/01
+tags:
+  - attack.execution
+  - attack.t1059.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'cmd'
+      - 'fast_3601'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving cmd
+  - Security tools and monitoring agents
+level: medium
