@@ -1,0 +1,29 @@
+title: Suspicious Windows Command Shell Activity Indicator 190
+id: e9f1a3dc-a56f-aa84-bea1-04dc39f395fd
+status: experimental
+description: Detects process or activity patterns associated with Windows Command Shell (T1059.003).
+references:
+  - https://attack.mitre.org/techniques/T1059/003/
+author: DetectionForge
+date: 2024/10/31
+modified: 2025/04/01
+tags:
+  - attack.execution
+  - attack.t1059.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'windows'
+      - 'suspicious_pattern_190'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving windows command shell
+  - Security tools and monitoring agents performing similar actions
+level: medium
