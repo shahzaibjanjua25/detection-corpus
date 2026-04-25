@@ -1,0 +1,29 @@
+title: Detection Pattern for Cmd Activity 313
+id: 4410a18e-105b-777e-d2ab-bb5254927a86
+status: experimental
+description: Detects activity patterns associated with Cmd (T1059.003).
+references:
+  - https://attack.mitre.org/techniques/T1059/003/
+author: DetectionForge
+date: 2025/04/10
+modified: 2025/05/01
+tags:
+  - attack.execution
+  - attack.t1059.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'cmd'
+      - 'pattern_313'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
