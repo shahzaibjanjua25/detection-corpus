@@ -1,0 +1,26 @@
+title: PowerShell AMSI Bypass Attempts
+id: 647f6176-c346-3cdb-7243-b1efabc24d48
+status: stable
+description: Detects known AMSI bypass patterns in PowerShell command lines
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2024/01/24
+modified: 2025/03/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'amsiInitFailed'
+      - 'AmsiUtils'
+      - '[Ref].Assembly.GetType'
+  condition: selection
+falsepositives:
+  - Security research
+  - Malware analysis sandboxes
+level: medium
