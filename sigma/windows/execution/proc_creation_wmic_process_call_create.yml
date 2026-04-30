@@ -1,0 +1,28 @@
+title: WMIC Process Call Create
+id: a7b8c9d0-e1f2-3456-0123-567890123456
+status: stable
+description: Detects use of wmic.exe to create a new process, a common technique for remote or local execution that can bypass some application control policies.
+references:
+  - https://attack.mitre.org/techniques/T1047/
+  - https://lolbas-project.github.io/lolbas/Binaries/Wmic/
+author: DetectionForge
+date: 2024/03/05
+modified: 2025/01/25
+tags:
+  - attack.execution
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\wmic.exe'
+    CommandLine|contains|all:
+      - 'process'
+      - 'call'
+      - 'create'
+  condition: selection
+falsepositives:
+  - Legitimate system administration scripts that use WMIC for remote management
+  - Monitoring or inventory tools that still rely on WMIC process creation
+level: medium
