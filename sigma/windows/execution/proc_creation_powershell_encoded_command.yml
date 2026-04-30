@@ -1,0 +1,38 @@
+title: PowerShell Encoded Command Execution
+id: e5f6a7b8-c9d0-1234-ef01-345678901234
+status: stable
+description: Detects PowerShell processes launched with the -EncodedCommand (or -e / -enc) parameter, a common obfuscation technique used by both attackers and some legitimate tools.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_exe
+author: DetectionForge
+date: 2024/02/20
+modified: 2025/01/10
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - ' -e '
+      - ' -en '
+      - ' -enc '
+      - ' -encodedcommand '
+      - ' -ec '
+  filter_windows_update:
+    ParentImage|endswith:
+      - '\TiWorker.exe'
+      - '\TrustedInstaller.exe'
+  filter_sccm:
+    ParentImage|endswith: '\ccmexec.exe'
+  condition: selection and not 1 of filter_*
+falsepositives:
+  - Software deployment tools (SCCM, Intune, PDQ) that encode PowerShell payloads for delivery
+  - Legitimate administrative scripts that use encoded commands to avoid quoting issues with complex arguments
+level: medium
