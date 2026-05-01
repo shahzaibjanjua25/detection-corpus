@@ -1,0 +1,28 @@
+title: PowerShell Pattern 5016
+id: 83aa54d4-58c4-4cbc-a77a-9f1ff953925b
+status: experimental
+description: Detects patterns associated with PowerShell (T1059.001).
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2024/03/17
+modified: 2025/08/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'powershell'
+      - 'x_5016'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for powershell
+  - Security and monitoring tools
+level: medium
