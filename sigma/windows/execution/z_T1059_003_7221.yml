@@ -1,0 +1,28 @@
+title: Cmd Indicator 7221
+id: 4e83a411-f0a3-43dd-a32e-8924c3e9482a
+status: experimental
+description: Detects patterns associated with Cmd (T1059.003).
+references:
+  - https://attack.mitre.org/techniques/T1059/003/
+author: DetectionForge
+date: 2024/04/22
+modified: 2025/09/01
+tags:
+  - attack.execution
+  - attack.t1059.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'cmd'
+      - 'z_7221'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for cmd
+  - Security and monitoring tools
+level: medium
