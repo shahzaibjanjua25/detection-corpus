@@ -1,0 +1,28 @@
+title: Suspicious DNS Query Length Indicating Tunneling
+id: a9b0c1d2-e3f4-5678-2345-789012345678
+status: experimental
+description: Detects unusually long DNS query names that may indicate DNS tunneling for command and control or data exfiltration.
+references:
+  - https://attack.mitre.org/techniques/T1071/004/
+author: DetectionForge
+date: 2024/08/01
+modified: 2025/01/05
+tags:
+  - attack.command-and-control
+  - attack.t1071.004
+logsource:
+  category: dns
+  product: any
+detection:
+  selection:
+    query|re: '.{80,}'
+  filter_known_cdn:
+    query|contains:
+      - 'cloudflare'
+      - 'akamai'
+      - 'fastly'
+  condition: selection and not filter_known_cdn
+falsepositives:
+  - Legitimate long CDN or advertising tracking domains
+  - Some certificate transparency or security scanning services
+level: medium
