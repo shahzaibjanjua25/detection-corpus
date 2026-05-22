@@ -1,0 +1,17 @@
+title: Certutil Download to Script Execution
+id: b9681ab5-5eaa-5101-ba67-af1b5b719109
+status: experimental
+description: Multi-stage correlation detecting certutil download to script execution within a 15m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - Certutil Download of Remote File
+    - PowerShell Encoded Command Execution
+  group-by:
+    - Computer
+  timespan: 15m
+tags:
+  - attack.t1105
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
