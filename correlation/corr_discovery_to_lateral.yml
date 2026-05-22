@@ -1,0 +1,18 @@
+title: AD Discovery to Lateral Movement
+id: 72e8c164-dfdb-0ea1-df13-67908f158491
+status: experimental
+description: Multi-stage correlation detecting ad discovery to lateral movement within a 60m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - AdFind Active Directory Recon
+    - BloodHound / SharpHound Indicators
+    - PsExec Execution
+  group-by:
+    - Computer
+  timespan: 60m
+tags:
+  - attack.t1087.002
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
