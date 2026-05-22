@@ -1,0 +1,18 @@
+title: Encoded PowerShell Followed by Outbound Network
+id: f4a5b6c7-d8e9-0123-7890-234567890123
+status: test
+description: Detects an encoded PowerShell execution followed shortly by unusual outbound network connections from the same host, a common pattern in staged malware delivery.
+correlation:
+  type: temporal
+  rules:
+    - PowerShell Encoded Command Execution
+  group-by:
+    - Computer
+  timespan: 15m
+tags:
+  - attack.execution
+  - attack.command-and-control
+  - attack.t1059.001
+falsepositives:
+  - Software deployment tools that use encoded PowerShell and then contact update servers
+level: high
