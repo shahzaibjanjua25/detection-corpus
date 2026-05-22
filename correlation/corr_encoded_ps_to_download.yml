@@ -1,0 +1,17 @@
+title: Encoded PowerShell to Download Cradle
+id: 2fc761a4-4ce8-339f-7944-b85ff23ed893
+status: experimental
+description: Multi-stage correlation detecting encoded powershell to download cradle within a 15m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - PowerShell Encoded Command Execution
+    - PowerShell Download Cradle
+  group-by:
+    - Computer
+  timespan: 15m
+tags:
+  - attack.t1059.001
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
