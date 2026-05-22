@@ -1,0 +1,17 @@
+title: Event Log Clear to Archive Staging
+id: 3ec263f7-bfec-dd49-a0f8-2b1fb0442b7e
+status: experimental
+description: Multi-stage correlation detecting event log clear to archive staging within a 45m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - Event Log Clearing via Wevtutil
+    - Archive Staging for Exfiltration
+  group-by:
+    - Computer
+  timespan: 45m
+tags:
+  - attack.t1070.001
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
