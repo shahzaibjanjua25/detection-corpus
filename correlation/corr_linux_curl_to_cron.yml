@@ -1,0 +1,20 @@
+title: Curl Bash Download Followed by Cron Persistence
+id: b6c7d8e9-f0a1-2345-9012-456789012345
+status: experimental
+description: Correlates a curl|bash style download/execution with a subsequent suspicious cron modification on the same host.
+correlation:
+  type: temporal_ordered
+  rules:
+    - Curl or Wget Piped to Bash
+    - Suspicious Cron Job Modification
+  group-by:
+    - Computer
+  timespan: 10m
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.t1059.004
+  - attack.t1053.003
+falsepositives:
+  - Automated provisioning pipelines that download scripts and install them via cron
+level: high
