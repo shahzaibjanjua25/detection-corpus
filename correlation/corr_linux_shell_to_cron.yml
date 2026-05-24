@@ -1,0 +1,17 @@
+title: Linux Reverse Shell to Cron Persistence
+id: 7a9da6e1-5114-b91b-2b89-94a0240b5efc
+status: experimental
+description: Multi-stage correlation detecting linux reverse shell to cron persistence within a 10m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - Bash Reverse Shell Indicators
+    - Cron Reverse Shell Persistence
+  group-by:
+    - Computer
+  timespan: 10m
+tags:
+  - attack.t1059.004
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
