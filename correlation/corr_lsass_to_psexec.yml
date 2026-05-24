@@ -1,0 +1,17 @@
+title: LSASS Dump to PsExec Lateral Movement
+id: 59d41de4-bb8f-e060-c874-ffe7e5d68a2d
+status: experimental
+description: Multi-stage correlation detecting lsass dump to psexec lateral movement within a 30m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - LSASS Memory Dump via Procdump or Similar Tools
+    - PsExec Execution
+  group-by:
+    - Computer
+  timespan: 30m
+tags:
+  - attack.t1003.001
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
