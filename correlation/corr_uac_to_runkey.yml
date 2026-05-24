@@ -1,0 +1,17 @@
+title: UAC Bypass to Run Key Persistence
+id: 05f460b5-83c0-819a-3fc3-a62b09ea31af
+status: experimental
+description: Multi-stage correlation detecting uac bypass to run key persistence within a 20m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - UAC Bypass via Fodhelper
+    - User Run Key Persistence
+  group-by:
+    - Computer
+  timespan: 20m
+tags:
+  - attack.t1548.002
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
