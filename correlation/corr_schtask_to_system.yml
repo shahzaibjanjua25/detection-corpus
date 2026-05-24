@@ -1,0 +1,16 @@
+title: Scheduled Task Creation as SYSTEM followed by Network
+id: 1b7c74fd-177a-7aa0-7a0c-58ffa33a622c
+status: experimental
+description: Multi-stage correlation detecting scheduled task creation as system followed by network within a 30m window.
+correlation:
+  type: temporal_ordered
+  rules:
+    - Scheduled Task Created as SYSTEM
+  group-by:
+    - Computer
+  timespan: 30m
+tags:
+  - attack.t1053.005
+falsepositives:
+  - Authorized red team or incident response activity that chains these techniques
+level: critical
