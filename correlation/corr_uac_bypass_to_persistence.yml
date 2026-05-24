@@ -1,0 +1,20 @@
+title: UAC Bypass Followed by Persistence Mechanism
+id: a5b6c7d8-e9f0-1234-8901-345678901234
+status: experimental
+description: Correlates a successful UAC bypass (fodhelper or similar) with subsequent creation of a Run key or scheduled task, indicating privilege escalation leading to persistence.
+correlation:
+  type: temporal_ordered
+  rules:
+    - UAC Bypass via Fodhelper
+    - Suspicious Modification of Run or RunOnce Registry Keys
+    - Suspicious Scheduled Task Creation
+  group-by:
+    - Computer
+  timespan: 20m
+tags:
+  - attack.privilege-escalation
+  - attack.persistence
+  - attack.t1548.002
+falsepositives:
+  - Rare legitimate software that elevates and then registers itself for startup
+level: high
