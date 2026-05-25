@@ -1,0 +1,31 @@
+title: Suspicious or Empty HTTP User-Agent
+id: b0c1d2e3-f4a5-6789-3456-890123456789
+status: test
+description: Detects HTTP requests with empty, known-malicious, or highly unusual User-Agent strings often used by malware and scanners.
+references:
+  - https://attack.mitre.org/techniques/T1071/001/
+author: DetectionForge
+date: 2024/08/05
+modified: 2025/02/10
+tags:
+  - attack.command-and-control
+  - attack.t1071.001
+logsource:
+  category: proxy
+  product: any
+detection:
+  selection_empty:
+    cs-user-agent:
+      - ''
+      - '-'
+  selection_known_bad:
+    cs-user-agent|contains:
+      - 'mimikatz'
+      - 'CobaltStrike'
+      - 'sqlmap'
+      - 'nikto'
+  condition: selection_empty or selection_known_bad
+falsepositives:
+  - Misconfigured internal services that send empty User-Agent headers
+  - Legacy monitoring probes
+level: medium
