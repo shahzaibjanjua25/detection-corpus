@@ -1,0 +1,29 @@
+title: Scheduled Task Suspicious Activity Pattern 1336
+id: 72bc6577-9f16-4f98-922c-fae2177b345e
+status: experimental
+description: Detects process or registry activity patterns associated with Scheduled Task (T1053.005).
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: DetectionForge
+date: 2025/09/28
+modified: 2025/06/01
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'scheduled'
+      - 'bulk_pattern_1336'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving scheduled task
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
