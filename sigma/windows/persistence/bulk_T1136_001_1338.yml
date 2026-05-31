@@ -1,0 +1,29 @@
+title: Local Account Suspicious Activity Pattern 1338
+id: b97537d1-16f2-4c15-fba3-621e127a6375
+status: experimental
+description: Detects process or registry activity patterns associated with Local Account (T1136.001).
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+author: DetectionForge
+date: 2025/09/30
+modified: 2025/06/01
+tags:
+  - attack.persistence
+  - attack.t1136.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'local'
+      - 'bulk_pattern_1338'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving local account
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
