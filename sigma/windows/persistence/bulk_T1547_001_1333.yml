@@ -1,0 +1,29 @@
+title: Registry Run Keys Suspicious Activity Pattern 1333
+id: 43df60d2-4c41-4f65-3830-cf139ba795b3
+status: experimental
+description: Detects process or registry activity patterns associated with Registry Run Keys (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2025/09/25
+modified: 2025/06/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'registry'
+      - 'bulk_pattern_1333'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving registry run keys
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
