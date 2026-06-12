@@ -1,0 +1,29 @@
+title: Winlogon Helper DLL Suspicious Activity Pattern 1712
+id: a8020578-328a-4a16-ae1c-18e1f651ae89
+status: experimental
+description: Detects process or registry activity patterns associated with Winlogon Helper DLL (T1547.004).
+references:
+  - https://attack.mitre.org/techniques/T1547/004/
+author: DetectionForge
+date: 2024/11/08
+modified: 2025/06/01
+tags:
+  - attack.persistence
+  - attack.t1547.004
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'winlogon'
+      - 'bulk_pattern_1712'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving winlogon helper dll
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
