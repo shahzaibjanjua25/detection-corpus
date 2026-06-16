@@ -1,0 +1,29 @@
+title: Shortcut Modification Suspicious Activity Pattern 1902
+id: ff555ac0-26c1-4554-0818-c5268a79a4ff
+status: experimental
+description: Detects process or registry activity patterns associated with Shortcut Modification (T1547.009).
+references:
+  - https://attack.mitre.org/techniques/T1547/009/
+author: DetectionForge
+date: 2025/05/17
+modified: 2025/06/01
+tags:
+  - attack.persistence
+  - attack.t1547.009
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'shortcut'
+      - 'bulk_pattern_1902'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving shortcut modification
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
