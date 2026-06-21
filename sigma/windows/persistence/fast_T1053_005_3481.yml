@@ -1,0 +1,29 @@
+title: SchTask Activity Indicator 3481
+id: 1d9cf27e-3d77-4e41-aad2-6c2de79d1b33
+status: experimental
+description: Detects activity patterns associated with SchTask (T1053.005).
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: DetectionForge
+date: 2025/05/27
+modified: 2025/07/01
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'schtask'
+      - 'fast_3481'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving schtask
+  - Security tools and monitoring agents
+level: medium
