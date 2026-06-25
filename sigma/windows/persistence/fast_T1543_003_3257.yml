@@ -1,0 +1,29 @@
+title: Service Activity Indicator 3257
+id: 985e6735-3ef4-43fc-ac31-c90a62e99e0a
+status: experimental
+description: Detects activity patterns associated with Service (T1543.003).
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: DetectionForge
+date: 2024/10/15
+modified: 2025/07/01
+tags:
+  - attack.persistence
+  - attack.t1543.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'service'
+      - 'fast_3257'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving service
+  - Security tools and monitoring agents
+level: medium
