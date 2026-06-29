@@ -1,0 +1,29 @@
+title: RunKey Activity Indicator 3005
+id: 73facf8f-0a66-4e98-a922-ad3366e51556
+status: experimental
+description: Detects activity patterns associated with RunKey (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2024/02/06
+modified: 2025/07/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'runkey'
+      - 'fast_3005'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving runkey
+  - Security tools and monitoring agents
+level: medium
