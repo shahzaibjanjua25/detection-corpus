@@ -1,0 +1,29 @@
+title: RunKey Activity Indicator 3555
+id: 5bcb8467-1d8d-4414-a58a-813defcb84db
+status: experimental
+description: Detects activity patterns associated with RunKey (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2025/08/09
+modified: 2025/07/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'runkey'
+      - 'fast_3555'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving runkey
+  - Security tools and monitoring agents
+level: medium
