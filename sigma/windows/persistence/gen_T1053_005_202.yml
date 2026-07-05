@@ -1,0 +1,29 @@
+title: Suspicious Scheduled Task Activity Indicator 202
+id: 6438c8d4-9b95-5c39-8f05-b4c355df3bc1
+status: experimental
+description: Detects process or activity patterns associated with Scheduled Task (T1053.005).
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: DetectionForge
+date: 2024/11/12
+modified: 2025/04/01
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'scheduled'
+      - 'suspicious_pattern_202'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving scheduled task
+  - Security tools and monitoring agents performing similar actions
+level: medium
