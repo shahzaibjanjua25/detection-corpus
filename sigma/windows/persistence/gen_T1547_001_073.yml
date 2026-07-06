@@ -1,0 +1,29 @@
+title: Suspicious Registry Run Keys Activity Indicator 073
+id: 4f84f222-2dab-6809-6a43-d5a4c97eac17
+status: experimental
+description: Detects process or activity patterns associated with Registry Run Keys (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2024/07/06
+modified: 2025/04/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'registry'
+      - 'suspicious_pattern_73'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving registry run keys
+  - Security tools and monitoring agents performing similar actions
+level: medium
