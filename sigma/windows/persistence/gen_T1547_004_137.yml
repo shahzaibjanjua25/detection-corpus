@@ -1,0 +1,29 @@
+title: Suspicious Winlogon Helper Activity Indicator 137
+id: 0787b9ba-74ea-da5b-00cf-9fdfea30855b
+status: experimental
+description: Detects process or activity patterns associated with Winlogon Helper (T1547.004).
+references:
+  - https://attack.mitre.org/techniques/T1547/004/
+author: DetectionForge
+date: 2024/09/08
+modified: 2025/04/01
+tags:
+  - attack.persistence
+  - attack.t1547.004
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'winlogon'
+      - 'suspicious_pattern_137'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving winlogon helper
+  - Security tools and monitoring agents performing similar actions
+level: medium
