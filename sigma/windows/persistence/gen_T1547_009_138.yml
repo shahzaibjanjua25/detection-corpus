@@ -1,0 +1,29 @@
+title: Suspicious Shortcut Modification Activity Indicator 138
+id: ebf70505-d5ec-b26e-a7da-4d9757cad4ec
+status: experimental
+description: Detects process or activity patterns associated with Shortcut Modification (T1547.009).
+references:
+  - https://attack.mitre.org/techniques/T1547/009/
+author: DetectionForge
+date: 2024/09/09
+modified: 2025/04/01
+tags:
+  - attack.persistence
+  - attack.t1547.009
+logsource:
+  category: file_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'shortcut'
+      - 'suspicious_pattern_138'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving shortcut modification
+  - Security tools and monitoring agents performing similar actions
+level: medium
