@@ -1,0 +1,29 @@
+title: Detection Pattern for SchTask Activity 245
+id: 06e5f052-6fda-29c7-7cab-bf4875ccb528
+status: experimental
+description: Detects activity patterns associated with SchTask (T1053.005).
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: DetectionForge
+date: 2025/02/01
+modified: 2025/05/01
+tags:
+  - attack.persistence
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'schtask'
+      - 'pattern_245'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
