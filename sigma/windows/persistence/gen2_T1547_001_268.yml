@@ -1,0 +1,29 @@
+title: Detection Pattern for RunKey Activity 268
+id: c8d491e6-aa31-9703-d9ee-9de0abe872cd
+status: experimental
+description: Detects activity patterns associated with RunKey (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2025/02/24
+modified: 2025/05/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'runkey'
+      - 'pattern_268'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate software and administrative tools using similar command patterns
+  - Security products and monitoring agents
+level: medium
