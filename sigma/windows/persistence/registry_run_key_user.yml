@@ -1,0 +1,24 @@
+title: User Run Key Persistence
+id: 2ac5e4f6-0b80-1cfd-8466-cfe3939d07cd
+status: stable
+description: Detects creation of Run/RunOnce keys under user hive by suspicious processes
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2024/02/02
+modified: 2025/03/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\Software\Microsoft\Windows\CurrentVersion\Run'
+  condition: selection
+falsepositives:
+  - Software installers registering startup
+  - Enterprise management agents
+level: medium
