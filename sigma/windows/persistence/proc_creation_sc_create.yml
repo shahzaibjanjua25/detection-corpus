@@ -1,0 +1,26 @@
+title: SC Create Suspicious Service
+id: d4b76d06-c1d5-44ed-352f-ef587b6046e8
+status: stable
+description: Detects sc.exe creating a new service with suspicious binary path
+references:
+  - https://attack.mitre.org/techniques/T1543/003/
+author: DetectionForge
+date: 2024/02/08
+modified: 2025/03/01
+tags:
+  - attack.persistence
+  - attack.t1543.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\sc.exe'
+    CommandLine|contains|all:
+      - 'create'
+      - 'binPath='
+  condition: selection
+falsepositives:
+  - Legitimate software installers creating services
+  - Driver installation
+level: medium
