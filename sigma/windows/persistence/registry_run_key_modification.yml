@@ -1,0 +1,32 @@
+title: Suspicious Modification of Run or RunOnce Registry Keys
+id: c9d0e1f2-a3b4-5678-2345-789012345678
+status: stable
+description: Detects creation or modification of entries under common autostart registry locations (Run, RunOnce) by non-standard processes.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2024/04/15
+modified: 2025/01/30
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\Software\Microsoft\Windows\CurrentVersion\Run'
+      - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+      - '\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run'
+  filter_known_good:
+    Image|endswith:
+      - '\msiexec.exe'
+      - '\setup.exe'
+      - '\choco.exe'
+      - '\winget.exe'
+  condition: selection and not filter_known_good
+falsepositives:
+  - Software installers that correctly register themselves for startup
+  - Enterprise software deployment tools (SCCM, Intune) writing Run keys
+level: medium
