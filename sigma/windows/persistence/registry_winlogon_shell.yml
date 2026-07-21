@@ -1,0 +1,25 @@
+title: Winlogon Shell Modification
+id: 52e8b47a-18fb-1bf3-1473-c07b6f87ea58
+status: stable
+description: Detects modification of Winlogon Shell or Userinit values
+references:
+  - https://attack.mitre.org/techniques/T1547/004/
+author: DetectionForge
+date: 2024/02/05
+modified: 2025/03/01
+tags:
+  - attack.persistence
+  - attack.t1547.004
+logsource:
+  category: registry_event
+  product: windows
+detection:
+  selection:
+    TargetObject|contains:
+      - '\Winlogon\Shell'
+      - '\Winlogon\Userinit'
+  condition: selection
+falsepositives:
+  - Rare legitimate customization
+  - Some kiosk or thin-client software
+level: medium
