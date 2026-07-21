@@ -1,0 +1,35 @@
+title: Suspicious Scheduled Task Creation
+id: d0e1f2a3-b4c5-6789-3456-890123456789
+status: stable
+description: Detects creation of scheduled tasks with suspicious characteristics such as high privileges, unusual paths, or encoded payloads.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: DetectionForge
+date: 2024/04/18
+modified: 2025/02/08
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.t1053.005
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains:
+      - '/create'
+      - '-create'
+  selection_suspicious:
+    CommandLine|contains:
+      - '/ru system'
+      - '/rl highest'
+      - 'powershell'
+      - 'cmd /c'
+      - 'mshta'
+      - 'from base64'
+  condition: selection and selection_suspicious
+falsepositives:
+  - Legitimate enterprise software that creates scheduled tasks running as SYSTEM
+  - Administrative scripts that intentionally schedule privileged maintenance tasks
+level: high
