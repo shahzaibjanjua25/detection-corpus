@@ -1,0 +1,28 @@
+title: RunKey Pattern 5092
+id: 7adef302-6b79-467c-a1a2-ca2a034ec51f
+status: experimental
+description: Detects patterns associated with RunKey (T1547.001).
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectionForge
+date: 2024/06/01
+modified: 2025/08/01
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'runkey'
+      - 'x_5092'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for runkey
+  - Security and monitoring tools
+level: medium
