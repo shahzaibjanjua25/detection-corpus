@@ -1,0 +1,7 @@
+category: registry_event
+product: windows
+required_fields:
+  - TargetObject
+  - Image
+  - Details
+notes: Sysmon Event ID 12/13/14 recommended. Windows Security auditing of registry can also be used but is noisier.
