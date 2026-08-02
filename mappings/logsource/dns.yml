@@ -1,0 +1,7 @@
+category: dns
+product: any
+required_fields:
+  - query
+  - query_type
+  - answer
+notes: Best collected from recursive resolvers or DNS servers. Length and entropy of query name are useful for tunneling detection.
