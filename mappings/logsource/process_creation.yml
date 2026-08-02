@@ -1,0 +1,9 @@
+category: process_creation
+product: windows
+required_fields:
+  - Image
+  - CommandLine
+  - ParentImage
+  - User
+  - IntegrityLevel
+notes: Requires Sysmon Event ID 1 or Windows Security 4688 with command-line auditing enabled. ParentImage is critical for many filters.
