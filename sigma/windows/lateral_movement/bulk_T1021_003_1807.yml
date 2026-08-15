@@ -1,0 +1,29 @@
+title: Distributed Component Object Model Suspicious Activity Pattern 1807
+id: 20ee8a48-cf50-4d29-48fa-d7442634a8f9
+status: experimental
+description: Detects process or registry activity patterns associated with Distributed Component Object Model (T1021.003).
+references:
+  - https://attack.mitre.org/techniques/T1021/003/
+author: DetectionForge
+date: 2025/02/11
+modified: 2025/06/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.003
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'distributed'
+      - 'bulk_pattern_1807'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving distributed component object model
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
