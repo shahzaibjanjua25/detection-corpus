@@ -1,0 +1,29 @@
+title: Windows Remote Management Suspicious Activity Pattern 1619
+id: e31f6629-eb19-4347-d2b2-068f9451bacf
+status: experimental
+description: Detects process or registry activity patterns associated with Windows Remote Management (T1021.006).
+references:
+  - https://attack.mitre.org/techniques/T1021/006/
+author: DetectionForge
+date: 2024/08/07
+modified: 2025/06/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'windows'
+      - 'bulk_pattern_1619'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving windows remote management
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
