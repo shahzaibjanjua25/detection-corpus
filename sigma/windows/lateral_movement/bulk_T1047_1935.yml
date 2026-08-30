@@ -1,0 +1,29 @@
+title: Windows Management Instrumentation Suspicious Activity Pattern 1935
+id: fe1f9528-94fc-49ff-6998-4b2d6786ebfb
+status: experimental
+description: Detects process or registry activity patterns associated with Windows Management Instrumentation (T1047).
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: DetectionForge
+date: 2025/06/19
+modified: 2025/06/01
+tags:
+  - attack.lateral-movement
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'windows'
+      - 'bulk_pattern_1935'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving windows management instrumentation
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
