@@ -1,0 +1,29 @@
+title: Pass the Hash Suspicious Activity Pattern 1936
+id: 7e06365b-df34-4921-cd51-caed0b0087d9
+status: experimental
+description: Detects process or registry activity patterns associated with Pass the Hash (T1550.002).
+references:
+  - https://attack.mitre.org/techniques/T1550/002/
+author: DetectionForge
+date: 2025/06/20
+modified: 2025/06/01
+tags:
+  - attack.lateral-movement
+  - attack.t1550.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'pass'
+      - 'bulk_pattern_1936'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving pass the hash
+  - Security tools, monitoring agents, and authorized assessments
+level: medium
