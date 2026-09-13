@@ -1,0 +1,29 @@
+title: SMB Activity Indicator 3265
+id: 17d5c86c-3aec-43d3-a145-ac1d05ebebc9
+status: experimental
+description: Detects activity patterns associated with SMB (T1021.002).
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: DetectionForge
+date: 2024/10/23
+modified: 2025/07/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'smb'
+      - 'fast_3265'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving smb
+  - Security tools and monitoring agents
+level: medium
