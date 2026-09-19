@@ -1,0 +1,29 @@
+title: WinRM Activity Indicator 3091
+id: 473d3e28-6a76-4631-aa92-63ec68d2bcca
+status: experimental
+description: Detects activity patterns associated with WinRM (T1021.006).
+references:
+  - https://attack.mitre.org/techniques/T1021/006/
+author: DetectionForge
+date: 2024/05/02
+modified: 2025/07/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'winrm'
+      - 'fast_3091'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving winrm
+  - Security tools and monitoring agents
+level: medium
