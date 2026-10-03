@@ -1,0 +1,29 @@
+title: WMI Activity Indicator 3542
+id: 59345f13-1e8d-4346-ab80-85b79d852bfb
+status: experimental
+description: Detects activity patterns associated with WMI (T1047).
+references:
+  - https://attack.mitre.org/techniques/T1047/
+author: DetectionForge
+date: 2025/07/27
+modified: 2025/07/01
+tags:
+  - attack.lateral-movement
+  - attack.t1047
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'wmi'
+      - 'fast_3542'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+      - '\svchost.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate administrative or software activity involving wmi
+  - Security tools and monitoring agents
+level: medium
