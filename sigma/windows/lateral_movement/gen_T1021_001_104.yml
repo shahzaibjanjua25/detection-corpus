@@ -1,0 +1,29 @@
+title: Suspicious Remote Desktop Protocol Activity Indicator 104
+id: 7ef380c4-6fa1-a03c-3d3f-12ee015c79e1
+status: experimental
+description: Detects process or activity patterns associated with Remote Desktop Protocol (T1021.001).
+references:
+  - https://attack.mitre.org/techniques/T1021/001/
+author: DetectionForge
+date: 2024/08/06
+modified: 2025/04/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'remote'
+      - 'suspicious_pattern_104'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving remote desktop protocol
+  - Security tools and monitoring agents performing similar actions
+level: medium
