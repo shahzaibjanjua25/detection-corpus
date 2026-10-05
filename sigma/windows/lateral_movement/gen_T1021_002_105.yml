@@ -1,0 +1,29 @@
+title: Suspicious SMB/Windows Admin Shares Activity Indicator 105
+id: 41d1e4da-b747-bc21-9980-1844943a4392
+status: experimental
+description: Detects process or activity patterns associated with SMB/Windows Admin Shares (T1021.002).
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: DetectionForge
+date: 2024/08/07
+modified: 2025/04/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'smb/windows'
+      - 'suspicious_pattern_105'
+  filter_legitimate:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\services.exe'
+  condition: selection and not filter_legitimate
+falsepositives:
+  - Legitimate administrative or software activity involving smb/windows admin shares
+  - Security tools and monitoring agents performing similar actions
+level: medium
