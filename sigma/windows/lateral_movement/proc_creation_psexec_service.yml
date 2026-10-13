@@ -1,0 +1,28 @@
+title: PsExec or Similar Service Installation for Lateral Movement
+id: c5d6e7f8-a9b0-1234-8901-345678901234
+status: stable
+description: Detects installation or start of the PSEXESVC service, a strong indicator of PsExec-style lateral movement.
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+  - https://docs.microsoft.com/en-us/sysinternals/downloads/psexec
+author: DetectionForge
+date: 2024/06/10
+modified: 2025/01/28
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\psexesvc.exe'
+  selection_service:
+    CommandLine|contains:
+      - 'PSEXESVC'
+      - 'PSEXEC'
+  condition: selection or selection_service
+falsepositives:
+  - Legitimate administrative use of PsExec by IT staff
+  - Some remote management suites that implement a PsExec-compatible service
+level: high
