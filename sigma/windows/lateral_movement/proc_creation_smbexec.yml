@@ -1,0 +1,27 @@
+title: SMBExec / Impacket Style Execution
+id: 2dd3aeda-4089-9934-fdf8-8a8eac338a7b
+status: stable
+description: Detects Impacket smbexec / atexec style command lines
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: DetectionForge
+date: 2024/03/03
+modified: 2025/03/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'smbexec'
+      - 'atexec'
+      - 'wmiexec'
+      - '-hashes'
+  condition: selection
+falsepositives:
+  - Authorized penetration tests
+  - Internal security assessments
+level: medium
