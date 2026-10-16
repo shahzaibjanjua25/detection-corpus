@@ -1,0 +1,27 @@
+title: WinRM / Enter-PSSession Lateral
+id: 29214b32-7fec-4e0c-9812-e962bca6cb5d
+status: stable
+description: Detects PowerShell remoting used for lateral movement patterns
+references:
+  - https://attack.mitre.org/techniques/T1021/006/
+author: DetectionForge
+date: 2024/03/01
+modified: 2025/03/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.006
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'Enter-PSSession'
+      - 'Invoke-Command'
+      - '-ComputerName'
+      - 'New-PSSession'
+  condition: selection
+falsepositives:
+  - Legitimate remote administration
+  - Configuration management
+level: medium
