@@ -1,0 +1,28 @@
+title: SMB Pattern 5109
+id: 6bc5c96c-8fcc-410a-abc2-ae869c2bc327
+status: experimental
+description: Detects patterns associated with SMB (T1021.002).
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: DetectionForge
+date: 2024/06/18
+modified: 2025/08/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'smb'
+      - 'x_5109'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for smb
+  - Security and monitoring tools
+level: medium
