@@ -1,0 +1,12 @@
+technique: T1098.004
+name: "Account Manipulation: SSH Authorized Keys"
+tactic: persistence
+rules:
+  - name: Linux SSH Authorized Keys File Modified
+    id: 8c1f4a2e-5b7d-4e93-9a61-2d7f0c3b8e14
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers file-write telemetry on auditd-enabled hosts. Does not cover
+      cloud/VM key injection via provider metadata APIs (separate rule, T1098.004
+      cloud variant) or authorized_keys writes on hosts with eBPF-only agents.
