@@ -1,0 +1,61 @@
+title: Linux SSH Authorized Keys File Modified
+id: 8c1f4a2e-5b7d-4e93-9a61-2d7f0c3b8e14
+status: experimental
+description: |
+  Detects modification of SSH authorized_keys files on Linux hosts via auditd
+  PATH and SYSCALL records. Adversaries append their own public key to a
+  victim account's authorized_keys file to establish persistent, passwordless
+  access that survives credential rotation. Covers root and all user home
+  directories, including containers where the host audit subsystem is shared.
+references:
+  - https://attack.mitre.org/techniques/T1098/004/
+  - https://man7.org/linux/man-pages/man5/authorized_keys.5.html
+  - https://www.elastic.co/guide/en/security/current/linux-persistence-via-ssh-authorized-keys.html
+author: DetectionForge
+date: 2024-03-11
+tags:
+  - attack.persistence
+  - attack.t1098.004
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection_path:
+    type: 'PATH'
+    name:
+      - '/root/.ssh/authorized_keys'
+      - '/root/.ssh/authorized_keys2'
+      - '/home/*/.ssh/authorized_keys'
+      - '/home/*/.ssh/authorized_keys2'
+  selection_write:
+    type:
+      - 'SYSCALL'
+    syscall:
+      - 'openat'
+      - 'open'
+      - 'creat'
+      - 'rename'
+      - 'renameat'
+      - 'renameat2'
+      - 'write'
+  filter_config_mgmt:
+    exe:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+  filter_ssh_daemon:
+    exe: '/usr/sbin/sshd'
+    key: 'ssh_login'          # only matches sshd key-auth events, not key writes
+  condition: selection_path and selection_write and not filter_config_mgmt and not filter_ssh_daemon
+falsepositives:
+  - Legitimate administrative onboarding — an admin manually appending a key
+    for a new hire, contractor, or break-glass account (expected; correlate
+    with change tickets and the operator's source IP).
+  - Configuration management and golden-image tooling (Ansible, Puppet, Chef,
+    Salt) reconciling authorized_keys as part of baseline enforcement — the
+    filter above reduces but does not eliminate this; some shops run these
+    from `/usr/local/bin` wrappers.
+  - Automated provisioning in CI/CD or cloud-init at first boot, which can
+    write keys into `/root/.ssh/authorized_keys` from a non-standard path.
+level: medium
