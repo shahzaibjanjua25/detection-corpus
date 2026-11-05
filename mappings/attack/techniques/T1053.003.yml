@@ -1,0 +1,16 @@
+technique: T1053.003
+name: "Scheduled Task/Job: Cron"
+tactic: persistence
+rules:
+  - name: Linux Cron Job Created or Modified
+    id: 3e7b9d14-6a2c-4f58-b1e0-9c4d2a7f5b83
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers file writes to system cron directories and per-user spools, plus
+      direct crontab binary invocation. Does not cover: (a) systemd timer
+      creation (T1053.006, separate rule planned), (b) at(1) jobs
+      (T1053.002), or (c) cron modifications on hosts without auditd. Also
+      does not detect an attacker editing an *existing* cron file that was
+      already whitelisted by package — the write still fires, but the FP
+      filter needs tuning per fleet.
