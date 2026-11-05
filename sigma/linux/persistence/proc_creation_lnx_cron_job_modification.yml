@@ -1,0 +1,89 @@
+title: Linux Cron Job Created or Modified
+id: 3e7b9d14-6a2c-4f58-b1e0-9c4d2a7f5b83
+status: experimental
+description: |
+  Detects creation or modification of cron job files and crontab entries on
+  Linux hosts via auditd PATH and SYSCALL records. Adversaries use cron to
+  establish recurring execution of payloads, beacons, or credential-harvesting
+  scripts. Covers system cron directories (/etc/cron.d, /etc/cron.{hourly,
+  daily,weekly,monthly}), per-user spools (/var/spool/cron), and the crontab
+  binary itself.
+references:
+  - https://attack.mitre.org/techniques/T1053/003/
+  - https://man7.org/linux/man-pages/man5/crontab.5.html
+  - https://www.elastic.co/guide/en/security/current/persistence-via-cron.html
+author: DetectionForge
+date: 2024-03-12
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.t1053.003
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection_cron_paths:
+    type: 'PATH'
+    name:
+      - '/etc/crontab'
+      - '/etc/cron.d/*'
+      - '/etc/cron.hourly/*'
+      - '/etc/cron.daily/*'
+      - '/etc/cron.weekly/*'
+      - '/etc/cron.monthly/*'
+      - '/var/spool/cron/*'
+      - '/var/spool/cron/crontabs/*'
+  selection_syscall:
+    type: 'SYSCALL'
+    syscall:
+      - 'openat'
+      - 'open'
+      - 'creat'
+      - 'rename'
+      - 'renameat'
+      - 'renameat2'
+      - 'unlink'
+      - 'unlinkat'
+  selection_crontab_bin:
+    type: 'EXECVE'
+    a0: '/usr/bin/crontab'
+    a1:
+      - '-e'
+      - '-r'
+      - '-i'
+  filter_pkg_mgmt:
+    exe:
+      - '/usr/bin/dpkg*'
+      - '/usr/bin/apt*'
+      - '/usr/bin/rpm*'
+      - '/usr/bin/yum*'
+      - '/usr/bin/dnf*'
+      - '/usr/bin/zypper*'
+  filter_config_mgmt:
+    exe:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+  filter_systemd_timer:
+    exe: '/usr/lib/systemd/systemd-cron'
+  condition: >
+    (selection_cron_paths and selection_syscall)
+    or selection_crontab_bin
+    and not filter_pkg_mgmt
+    and not filter_config_mgmt
+    and not filter_systemd_timer
+falsepositives:
+  - Package manager installation or upgrade of software that ships cron
+    fragments under /etc/cron.d/ (e.g., logrotate, certbot, php session
+    cleanup) — filtered partially by exe path but dpkg maintainer scripts
+    can invoke /bin/sh as the writer.
+  - Configuration management tooling (Ansible, Puppet, Chef, Salt) enforcing
+    baseline cron entries across the fleet — filter reduces noise but some
+    shops wrap these binaries, so the exe path may differ.
+  - Legitimate administrator changes via `crontab -e` during onboarding,
+    rotation, or break-glass maintenance — correlate with change tickets
+    and the operator's SSH session.
+  - Backup, monitoring, and patching agents (e.g., Bacula, Zabbix, OMS)
+    that drop maintenance cron fragments on a schedule.
+level: medium
