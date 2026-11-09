@@ -6,27 +6,8 @@ This corpus was built to the quality gates and structure defined in the Detectio
 
 ---
 
-## Current Coverage
+## Rule Collections
 
-**2,500+ detection rules** across Sigma (Windows, Linux, Network, Cloud), Sigma correlation, and YARA.
+Rules are organized by platform and format. The corpus grows over time; browse `sigma/`, `correlation/`, and `yara/` for the current collection. `MANIFEST.json` contains repository metadata.
 
-| Category                          | Coverage        |
-|-----------------------------------|-----------------|
-| **Sigma (Windows)**               | 2,500+          |
-| **Sigma (Linux)**                 | 10+             |
-| **Sigma (Network)**               | 4+              |
-| **Sigma (Cloud – AWS/Azure/GCP)** | 6+              |
-| **Correlation rules**             | 12+             |
-| **YARA**                          | 160+            |
-| **Total detection rules**         | **2,500+**      |
-
-Coverage spans all major MITRE ATT&CK tactics. Windows Sigma rules are organized by tactic and include credential access, execution, persistence, privilege escalation, defense evasion, discovery, lateral movement, collection, exfiltration, and command and control.
-
-YARA coverage includes malware families, packers, webshells, and threat-hunting artifacts.
-
-The authoritative live count is always available with:
-
-```bash
-find sigma -name "*.yml" | wc -l        # Sigma
-find yara  -name "*.yar" | wc -l        # YARA
-find correlation -name "*.yml" | wc -l  # Correlation
+Coverage spans MITRE ATT&CK tactics. YARA rules cover malware families, packers, webshells, and threat hunting.
