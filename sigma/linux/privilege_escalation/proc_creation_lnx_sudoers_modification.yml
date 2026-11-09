@@ -1,0 +1,91 @@
+title: Linux Sudoers File Modified
+id: 5a2e8c61-9f3d-4b07-8e15-6c9d1f4a2b70
+status: experimental
+description: |
+  Detects creation or modification of sudoers policy files on Linux hosts via
+  auditd PATH and SYSCALL records. An adversary who can write to /etc/sudoers
+  or /etc/sudoers.d/ grants themselves passwordless root — the cleanest
+  privilege-escalation persistence on Linux, needing no credential theft and
+  surviving password rotation. Covers both the monolithic /etc/sudoers file
+  and the drop-in directory /etc/sudoers.d/ used by modern distros.
+references:
+  - https://attack.mitre.org/techniques/T1548/003/
+  - https://man7.org/linux/man-pages/man5/sudoers.5.html
+  - https://www.elastic.co/guide/en/security/current/linux-privilege-escalation-via-sudoers.html
+author: DetectionForge
+date: 2024-03-13
+tags:
+  - attack.privilege_escalation
+  - attack.persistence
+  - attack.t1548.003
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection_sudoers_paths:
+    type: 'PATH'
+    name:
+      - '/etc/sudoers'
+      - '/etc/sudoers.d/*'
+      - '/etc/sudoers.tmp'
+      - '/etc/sudo.conf'
+  selection_syscall:
+    type: 'SYSCALL'
+    syscall:
+      - 'openat'
+      - 'open'
+      - 'creat'
+      - 'rename'
+      - 'renameat'
+      - 'renameat2'
+      - 'unlink'
+      - 'unlinkat'
+      - 'chmod'
+      - 'fchmod'
+      - 'fchmodat'
+  selection_visudo:
+    type: 'EXECVE'
+    a0: '/usr/sbin/visudo'
+    a1:
+      - '-f'
+      - '-c'
+  filter_pkg_mgmt:
+    exe:
+      - '/usr/bin/dpkg*'
+      - '/usr/bin/apt*'
+      - '/usr/bin/rpm*'
+      - '/usr/bin/yum*'
+      - '/usr/bin/dnf*'
+      - '/usr/bin/zypper*'
+  filter_config_mgmt:
+    exe:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+  filter_sudo_bin:
+    exe:
+      - '/usr/bin/sudo'
+      - '/usr/bin/sudoedit'
+  condition: >
+    (selection_sudoers_paths and selection_syscall)
+    and not selection_visudo
+    and not filter_pkg_mgmt
+    and not filter_config_mgmt
+    and not filter_sudo_bin
+falsepositives:
+  - Legitimate administrator edits via `visudo` during onboarding, role
+    changes, or break-glass maintenance — the visudo EXECVE selection is
+    excluded, but admins who edit /etc/sudoers with a plain editor (vi, nano)
+    will fire. Correlate with change tickets and the operator's SSH session.
+  - Configuration management tooling (Ansible, Puppet, Chef, Salt) enforcing
+    sudoers baseline across the fleet — the filter reduces noise but some
+    shops wrap these binaries or run them from /usr/local/bin, so the exe
+    path may differ. Tune by adding a ppid allow-list for the actual wrapper.
+  - Package installation or upgrade of software that ships a sudoers
+    drop-in under /etc/sudoers.d/ (e.g., docker, podman, cloud-init,
+    monitoring agents) — filtered partially by exe path, but dpkg/rpm
+    maintainer scripts spawn /bin/sh as the writer.
+  - Cloud-init or first-boot provisioning writing sudoers fragments from
+    a non-standard path (e.g., /var/lib/cloud/).
+level: high
