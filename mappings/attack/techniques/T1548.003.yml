@@ -1,0 +1,17 @@
+technique: T1548.003
+name: "Abuse Elevation Control Mechanism: Sudo and Sudo Caching"
+tactic: privilege_escalation
+rules:
+  - name: Linux Sudoers File Modified
+    id: 5a2e8c61-9f3d-4b07-8e15-6c9d1f4a2b70
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers file writes to /etc/sudoers, /etc/sudoers.d/, /etc/sudo.conf,
+      plus direct visudo invocation and privilege changes via chmod.
+      Does not cover: (a) LDAP-backed sudoers (sudo-ldap/sssd) — needs a
+      directory-server-side rule, (b) sudo caching abuse (timestamp_timeout
+      replay) which leaves no local file write, (c) sudoers edits on hosts
+      without auditd. Also does not distinguish an adversary *appending* to
+      an existing sudoers file from an admin doing the same — both fire; the
+      FP filter is the only discriminator.
