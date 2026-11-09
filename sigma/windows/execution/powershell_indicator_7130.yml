@@ -1,0 +1,28 @@
+title: PowerShell Indicator 7130
+id: 8f0b30b5-1322-47c6-a2ae-01c8b4252111
+status: experimental
+description: Detects patterns associated with PowerShell (T1059.001).
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2025/02/25
+modified: 2025/09/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'powershell'
+      - 'z_7130'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for powershell
+  - Security and monitoring tools
+level: medium

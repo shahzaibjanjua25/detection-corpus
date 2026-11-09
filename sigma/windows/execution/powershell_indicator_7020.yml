@@ -1,0 +1,28 @@
+title: PowerShell Indicator 7020
+id: 7bdecda4-66c2-487d-a8c8-75ba6c47c236
+status: experimental
+description: Detects patterns associated with PowerShell (T1059.001).
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2024/11/07
+modified: 2025/09/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'powershell'
+      - 'z_7020'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for powershell
+  - Security and monitoring tools
+level: medium

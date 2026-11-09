@@ -1,0 +1,28 @@
+title: LSASS Indicator 7194
+id: b0de6b28-b90c-457f-a602-3d926790b088
+status: experimental
+description: Detects patterns associated with LSASS (T1003.001).
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectionForge
+date: 2025/04/30
+modified: 2025/09/01
+tags:
+  - attack.credential-access
+  - attack.t1003.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'lsass'
+      - 'z_7194'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for lsass
+  - Security and monitoring tools
+level: medium

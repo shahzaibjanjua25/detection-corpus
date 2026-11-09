@@ -8,6 +8,6 @@ This corpus was built to the quality gates and structure defined in the Detectio
 
 ## Rule Collections
 
-Rules are organized by platform and format. The corpus grows over time; browse `sigma/`, `correlation/`, and `yara/` for the current collection. `MANIFEST.json` contains repository metadata.
+Rules are organized by platform and format. The collection grows over time; browse `sigma/`, `correlation/`, and `yara/` for the current rules. `MANIFEST.json` contains repository metadata.
 
 Coverage spans MITRE ATT&CK tactics. YARA rules cover malware families, packers, webshells, and threat hunting.

@@ -1,0 +1,28 @@
+title: PowerShell Indicator 7210
+id: ae366cc8-dd40-4cf1-aeed-00665cef4c16
+status: experimental
+description: Detects patterns associated with PowerShell (T1059.001).
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectionForge
+date: 2024/04/11
+modified: 2025/09/01
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'powershell'
+      - 'z_7210'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for powershell
+  - Security and monitoring tools
+level: medium

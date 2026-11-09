@@ -1,0 +1,28 @@
+title: SMB Indicator 7017
+id: 9d4888f8-5b24-4d11-a7ea-c838416f89e6
+status: experimental
+description: Detects patterns associated with SMB (T1021.002).
+references:
+  - https://attack.mitre.org/techniques/T1021/002/
+author: DetectionForge
+date: 2024/11/04
+modified: 2025/09/01
+tags:
+  - attack.lateral-movement
+  - attack.t1021.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'smb'
+      - 'z_7017'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for smb
+  - Security and monitoring tools
+level: medium

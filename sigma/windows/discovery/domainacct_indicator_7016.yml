@@ -1,0 +1,28 @@
+title: DomainAcct Indicator 7016
+id: d0009564-64cc-4bca-a3a1-ef350b875252
+status: experimental
+description: Detects patterns associated with DomainAcct (T1087.002).
+references:
+  - https://attack.mitre.org/techniques/T1087/002/
+author: DetectionForge
+date: 2024/11/03
+modified: 2025/09/01
+tags:
+  - attack.discovery
+  - attack.t1087.002
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    CommandLine|contains:
+      - 'domainacct'
+      - 'z_7016'
+  filter_main:
+    ParentImage|endswith:
+      - '\services.exe'
+  condition: selection and not filter_main
+falsepositives:
+  - Legitimate admin/software activity for domainacct
+  - Security and monitoring tools
+level: medium
