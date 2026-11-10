@@ -1,0 +1,19 @@
+technique: T1003.008
+name: "OS Credential Dumping: /etc/passwd and /etc/shadow"
+tactic: credential_access
+rules:
+  - name: Linux Shadow File Accessed by Non-Privileged Process
+    id: 7d4b1f93-2c8e-4a65-b0f7-3e5a9d6c1b48
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers read access to /etc/shadow, /etc/gshadow, /etc/passwd, /etc/group
+      and their backup variants on auditd-enabled hosts, excluding the expected
+      privileged consumers and routine system tools. Does not cover: (a)
+      reads via LDAP/SSSD-backed authentication where shadow is not the
+      credential store, (b) reads performed through a privileged helper on
+      the attacker's behalf (setuid binary, PAM module), (c) eBPF-only hosts
+      without auditd, (d) container-namespace reads not covered by host
+      audit. The rule is intentionally noisy on /etc/passwd and /etc/group
+      — consider scoping the audit watch to /etc/shadow and /etc/gshadow
+      only if audit throughput becomes a problem.
