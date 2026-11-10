@@ -1,0 +1,130 @@
+title: Linux Shadow File Accessed by Non-Privileged Process
+id: 7d4b1f93-2c8e-4a65-b0f7-3e5a9d6c1b48
+status: experimental
+description: |
+  Detects reads of /etc/shadow and /etc/gshadow by processes that are not
+  the expected privileged consumers (login, sshd, sudo, passwd, chage,
+  PAM stack). Adversaries read /etc/shadow to extract password hashes for
+  offline cracking, and /etc/passwd to enumerate accounts and shells. Unlike
+  modification rules, this fires on access — catching the credential dump
+  in progress rather than after the attacker has exfiltrated the file.
+references:
+  - https://attack.mitre.org/techniques/T1003/008/
+  - https://man7.org/linux/man-pages/man5/shadow.5.html
+  - https://www.elastic.co/guide/en/security/current/linux-credential-access-via-shadow.html
+author: DetectionForge
+date: 2024-03-14
+tags:
+  - attack.credential_access
+  - attack.t1003.008
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection_shadow_paths:
+    type: 'PATH'
+    name:
+      - '/etc/shadow'
+      - '/etc/shadow-'
+      - '/etc/gshadow'
+      - '/etc/gshadow-'
+      - '/etc/passwd'
+      - '/etc/passwd-'
+      - '/etc/group'
+      - '/etc/group-'
+  selection_read:
+    type: 'SYSCALL'
+    syscall:
+      - 'openat'
+      - 'open'
+      - 'read'
+      - 'readv'
+      - 'pread64'
+  filter_priv_consumers:
+    exe:
+      - '/usr/sbin/sshd'
+      - '/usr/sbin/login'
+      - '/usr/bin/login'
+      - '/usr/bin/su'
+      - '/usr/bin/sudo'
+      - '/usr/sbin/sudo'
+      - '/usr/bin/passwd'
+      - '/usr/sbin/chpasswd'
+      - '/usr/bin/chage'
+      - '/usr/sbin/pam_*'
+      - '/usr/lib/pam_*'
+      - '/usr/lib/x86_64-linux-gnu/security/pam_*'
+      - '/usr/lib64/security/pam_*'
+      - '/usr/sbin/unix_chkpwd'
+      - '/usr/sbin/sssd'
+      - '/usr/sbin/nslcd'
+      - '/usr/sbin/systemd-user-sessions'
+      - '/usr/bin/systemd-*'
+      - '/usr/lib/systemd/systemd-*'
+  filter_system_tools:
+    exe:
+      - '/usr/bin/getent'
+      - '/usr/bin/id'
+      - '/usr/bin/groups'
+      - '/usr/bin/who'
+      - '/usr/bin/w'
+      - '/usr/bin/last'
+      - '/usr/bin/lastlog'
+      - '/usr/bin/users'
+      - '/usr/bin/lslogins'
+      - '/usr/bin/cat'
+      - '/usr/bin/head'
+      - '/usr/bin/tail'
+      - '/usr/bin/less'
+      - '/usr/bin/more'
+      - '/usr/bin/awk'
+      - '/usr/bin/gawk'
+      - '/usr/bin/sed'
+      - '/usr/bin/grep'
+      - '/usr/bin/egrep'
+      - '/usr/bin/fgrep'
+      - '/usr/bin/dpkg*'
+      - '/usr/bin/apt*'
+      - '/usr/bin/rpm*'
+      - '/usr/bin/yum*'
+      - '/usr/bin/dnf*'
+      - '/usr/bin/zypper*'
+  filter_config_mgmt:
+    exe:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+  filter_backup_agents:
+    exe:
+      - '/usr/sbin/bacula-*'
+      - '/usr/sbin/amandad*'
+      - '/opt/commvault/*'
+      - '/opt/veeam/*'
+      - '/usr/bin/rsync'
+  condition: >
+    (selection_shadow_paths and selection_read)
+    and not filter_priv_consumers
+    and not filter_system_tools
+    and not filter_config_mgmt
+    and not filter_backup_agents
+falsepositives:
+  - Legitimate administrative inspection — an admin running `cat /etc/shadow`,
+    `less /etc/passwd`, or `grep` over these files during troubleshooting,
+    user-audit, or account cleanup. The system-tools filter excludes common
+    pager/text tools but an admin who pipes through a script or uses an
+    editor will fire. Correlate with the operator's SSH session and change
+    ticket.
+  - Backup and monitoring agents that read /etc/shadow as part of a
+    scheduled sweep (Bacula, Amanda, CommVault, Veeam) — the filter reduces
+    noise but path wrappers vary, so tune per fleet.
+  - Configuration management tooling enumerating users for baseline
+    enforcement (Ansible, Puppet, Chef, Salt) — filter covers the primary
+    binary paths but wrappers under /usr/local/bin may miss.
+  - Container and orchestration agents (kubelet, containerd, docker) that
+    read /etc/shadow inside container images as part of image scanning or
+    user-namespace setup — out of scope for host auditd unless container
+    namespaces are audited.
+  - Custom in-house user-provisioning or compliance-scanning scripts that
+    read /etc/shadow directly instead of through `getent`.
+level: high
