@@ -1,0 +1,19 @@
+technique: T1070.002
+name: "Indicator Removal: Clear Linux or Mac System Logs"
+tactic: defense_evasion
+rules:
+  - name: Linux System Logs Cleared or Tampered
+    id: 9f2c6a47-8b1e-4d93-a5f0-7e3c2b9d4a16
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers direct file manipulation of /var/log/** (auditd PATH+SYSCALL)
+      and invocation of journalctl --vacuum-*/--rotate/--flush, rm /var/log,
+      truncate/shred/dd against /var/log (process_creation). Does not cover:
+      (a) in-place log rewriting that avoids destructive syscalls (needs a
+      content-integrity complement like AIDE), (b) log-clearing on hosts
+      without auditd for the file-manipulation branch, (c) adversary who
+      disables the logging daemon first (T1562.001, separate rule), (d)
+      remote/centralized log destruction (out of scope, host-side only).
+      This is the first rule in the corpus with two log-source branches;
+      both must be deployed for full coverage.
