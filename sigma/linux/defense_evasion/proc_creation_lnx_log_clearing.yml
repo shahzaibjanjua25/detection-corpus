@@ -1,0 +1,121 @@
+title: Linux System Logs Cleared or Tampered
+id: 9f2c6a47-8b1e-4d93-a5f0-7e3c2b9d4a16
+status: experimental
+description: |
+  Detects clearing, truncation, or deletion of system log files on Linux
+  hosts. Covers both direct file manipulation (truncate, rm, shred, dd over
+  /var/log/*) captured via auditd PATH records, and invocation of the
+  system's own log-management binaries (journalctl --vacuum-*, logrotate
+  -f with destructive intent, rm on /var/log) captured via process_creation.
+  Adversaries clear logs to destroy forensic evidence of prior activity;
+  this rule targets the destruction moment, before the adversary exits.
+references:
+  - https://attack.mitre.org/techniques/T1070/002/
+  - https://man7.org/linux/man-pages/man1/journalctl.1.html
+  - https://www.elastic.co/guide/en/security/current/linux-log-clearing.html
+author: DetectionForge
+date: 2024-03-15
+tags:
+  - attack.defense_evasion
+  - attack.t1070.002
+logsource:
+  product: linux
+  service: auditd
+detection:
+  # --- Auditd branch: direct file manipulation of log paths ---
+  selection_log_paths:
+    type: 'PATH'
+    name:
+      - '/var/log/*'
+      - '/var/log/**/*'
+      - '/var/log/audit/*'
+      - '/var/log/journal/*'
+      - '/run/log/journal/*'
+  selection_destructive_syscall:
+    type: 'SYSCALL'
+    syscall:
+      - 'unlink'
+      - 'unlinkat'
+      - 'rename'
+      - 'renameat'
+      - 'renameat2'
+      - 'truncate'
+      - 'ftruncate'
+  # --- Process_creation branch: log-management binaries with destructive flags ---
+  selection_journalctl:
+    type: 'EXECVE'
+    a0: '/usr/bin/journalctl'
+    a1:
+      - '--vacuum-time=*'
+      - '--vacuum-size=*'
+      - '--vacuum-files=*'
+      - '--rotate'
+      - '--flush'
+  selection_rm_var_log:
+    type: 'EXECVE'
+    a0: '/usr/bin/rm'
+    a1|contains: '/var/log'
+  selection_truncate_bin:
+    type: 'EXECVE'
+    a0:
+      - '/usr/bin/truncate'
+      - '/usr/bin/shred'
+      - '/usr/bin/dd'
+    a1|contains: '/var/log'
+  # --- Filters: legitimate log rotation and maintenance ---
+  filter_logrotate:
+    type: 'EXECVE'
+    a0: '/usr/sbin/logrotate'
+    a1|contains:
+      - '/etc/logrotate.conf'
+      - '/etc/logrotate.d/'
+  filter_pkg_mgmt:
+    exe:
+      - '/usr/bin/dpkg*'
+      - '/usr/bin/apt*'
+      - '/usr/bin/rpm*'
+      - '/usr/bin/yum*'
+      - '/usr/bin/dnf*'
+      - '/usr/bin/zypper*'
+  filter_config_mgmt:
+    exe:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+  filter_systemd_journald:
+    exe: '/usr/lib/systemd/systemd-journald'
+  condition: >
+    (
+      (selection_log_paths and selection_destructive_syscall)
+      or selection_journalctl
+      or selection_rm_var_log
+      or selection_truncate_bin
+    )
+    and not filter_logrotate
+    and not filter_pkg_mgmt
+    and not filter_config_mgmt
+    and not filter_systemd_journald
+falsepositives:
+  - Scheduled log rotation via logrotate on a systemd timer — the primary
+    source of routine /var/log deletion; filtered partially by the
+    logrotate EXECVE allow-list, but logrotate's postrotate scripts can
+    invoke rm/truncate as child processes, which will fire. Correlate with
+    the logrotate timer window and the /etc/logrotate.d/ config being
+    unchanged.
+  - Administrator housekeeping — manual `journalctl --vacuum-time=7d`,
+    `rm /var/log/old.log`, or `truncate -s 0` on a runaway log during an
+    incident. Legitimate but indistinguishable from an adversary at the
+    syscall level; correlate with the operator's SSH session and change
+    ticket.
+  - Package installation/upgrade removing log files for the old version
+    (e.g., apt removing /var/log/postgresql/ on a major version bump) —
+    filtered partially by exe path, but maintainer scripts spawn /bin/sh.
+  - Application-level log rotation not managed by logrotate (e.g., nginx
+    `postrotate` scripts, Java appenders, custom Python rotating handlers)
+    that unlink their own log files after rotation — these will fire and
+    must be allow-listed by exe path per fleet.
+  - Monitoring or SIEM agents that truncate/rotate their own buffer files
+    under /var/log/ (e.g., osquery, fluentd, filebeat) — often harmless but
+    path-dependent; tune per fleet.
+level: high
