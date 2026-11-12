@@ -1,0 +1,98 @@
+title: Linux Systemd Service Unit Created or Modified
+id: 2b8f5e03-7a4c-49d1-b3e6-1f9c8d2a5e74
+status: experimental
+description: |
+  Detects creation or modification of systemd service unit files outside
+  expected package-manager paths. An adversary who drops a .service unit
+  into /etc/systemd/system/ gains persistence across reboots, automatic
+  restart on failure, and journal logging that is indistinguishable from
+  legitimate services. Covers both system units (/etc/systemd/system/) and
+  user units (/etc/systemd/user/, ~/.config/systemd/user/), and excludes
+  package-manager writes to /usr/lib/systemd/system/ and /lib/systemd/system/
+  (those are vendor-owned and rarely modified post-install).
+references:
+  - https://attack.mitre.org/techniques/T1543/002/
+  - https://man7.org/linux/man-pages/man5/systemd.service.5.html
+  - https://www.elastic.co/guide/en/security/current/linux-persistence-via-systemd-service.html
+author: DetectionForge
+date: 2024-03-16
+tags:
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.t1543.002
+logsource:
+  product: linux
+  service: file_event
+detection:
+  selection_unit_paths:
+    file.path:
+      - '/etc/systemd/system/*.service'
+      - '/etc/systemd/system/*/*.service'
+      - '/etc/systemd/user/*.service'
+      - '/etc/systemd/user/*/*.service'
+      - '/home/*/.config/systemd/user/*.service'
+      - '/root/.config/systemd/user/*.service'
+  selection_actions:
+    file.action:
+      - 'create'
+      - 'modify'
+      - 'rename'
+      - 'chmod'
+  filter_pkg_mgmt:
+    process.executable:
+      - '/usr/bin/dpkg*'
+      - '/usr/bin/apt*'
+      - '/usr/bin/rpm*'
+      - '/usr/bin/yum*'
+      - '/usr/bin/dnf*'
+      - '/usr/bin/zypper*'
+  filter_config_mgmt:
+    process.executable:
+      - '/usr/bin/ansible*'
+      - '/usr/bin/puppet*'
+      - '/usr/bin/chef-client*'
+      - '/usr/bin/salt-*'
+      - '/usr/local/bin/ansible*'
+      - '/usr/local/bin/puppet*'
+  filter_systemd_own:
+    process.executable:
+      - '/usr/bin/systemctl'
+      - '/usr/lib/systemd/systemd-*'
+  filter_unit_installers:
+    process.executable:
+      - '/usr/bin/deb-systemd-helper'
+      - '/usr/bin/deb-systemd-invoke'
+      - '/usr/bin/systemd-sysusers'
+      - '/usr/bin/systemd-tmpfiles'
+  condition: >
+    selection_unit_paths
+    and selection_actions
+    and not filter_pkg_mgmt
+    and not filter_config_mgmt
+    and not filter_systemd_own
+    and not filter_unit_installers
+falsepositives:
+  - Legitimate administrator creation of a systemd service during application
+    deployment, troubleshooting, or migration — the most common benign path.
+    Often performed interactively via `systemctl edit --full`, an editor
+    writing to /etc/systemd/system/, or `tee` from a provisioning script.
+    Correlate with change tickets and the operator's SSH session.
+  - Configuration management tooling (Ansible systemd_service module,
+    Puppet, Chef, Salt) enforcing service units across the fleet — the
+    filter covers the primary binary paths but wrappers under
+    /usr/local/bin or custom deployment scripts will miss.
+  - Application installers that ship their own .service files via `make
+    install` or vendor tarballs (not package-managed) — these write directly
+    to /etc/systemd/system/ and are indistinguishable from adversary writes
+    at the file-event level. Tune by allow-listing the installer's exe path
+    per fleet.
+  - Container runtime or orchestration agents (kubelet, containerd, docker)
+    that generate transient service units for container health checks —
+    path-dependent; verify whether your fleet's runtime writes to
+    /etc/systemd/system/ or uses a different mechanism (e.g., systemd
+    transient units via D-Bus, which do NOT write files and are NOT covered
+    by this rule).
+  - Boot-time services reinstalled by cloud-init or first-boot provisioning
+    scripts on ephemeral hosts — expected on autoscaling groups; correlate
+    with instance launch events.
+level: high
