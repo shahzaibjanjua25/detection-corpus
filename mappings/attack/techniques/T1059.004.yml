@@ -1,0 +1,20 @@
+technique: T1059.004
+name: "Command and Scripting Interpreter: Unix Shell"
+tactic: execution
+rules:
+  - name: Linux Reverse Shell via /dev/tcp or Named Pipe
+    id: 6e3a9c12-4f7b-4d58-8a1e-2c9d5b8f1a37
+    status: experimental
+    coverage: partial
+    notes: >
+      Covers the most common reverse-shell one-liners: bash/sh /dev/tcp,
+      nc/ncat/socat with exec, python/perl/ruby/php socket one-liners, and
+      mkfifo named-pipe relays. Does not cover: (a) obfuscated one-liners
+      (base64-decode-and-exec, variable-split commands, eval), (b)
+      statically-linked custom binaries (needs T1071/T1095 network rule),
+      (c) compiled-language one-liners (gcc/go/rust), (d) named-pipe
+      relays where the relay binary is renamed and the mkfifo path is
+      avoided. This rule is the most portable in the corpus — works on
+      any host with process accounting, not just auditd file-watch hosts.
+      Rated `critical` because a reverse shell *is* the intrusion, not a
+      precursor to it.
