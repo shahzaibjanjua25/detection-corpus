@@ -1,0 +1,146 @@
+title: Linux Reverse Shell via /dev/tcp or Named Pipe
+id: 6e3a9c12-4f7b-4d58-8a1e-2c9d5b8f1a37
+status: experimental
+description: |
+  Detects interactive reverse shells on Linux hosts via process_creation.
+  Covers the most common reverse-shell one-liners: bash /dev/tcp redirection,
+  netcat/ncat/socat with -e or -c, python/perl/ruby socket one-liners, and
+  named-pipe (mkfifo) shell relays. Adversaries use reverse shells to obtain
+  an interactive foothold after initial code execution; the shell connects
+  outbound to an attacker-controlled listener and pipes a real terminal over
+  the socket. This is the most common post-exploitation payload on Linux and
+  the single highest-signal process_creation rule in the corpus.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://swisskyrepo.github.io/InternalAllTheThings/cheatsheets/shell-reverse-cheatsheet/
+  - https://www.elastic.co/guide/en/security/current/linux-reverse-shell.html
+author: DetectionForge
+date: 2024-03-17
+tags:
+  - attack.execution
+  - attack.command_and_control
+  - attack.t1059.004
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  # --- Bash /dev/tcp reverse shell ---
+  selection_bash_dev_tcp:
+    Image|endswith:
+      - '/bash'
+      - '/sh'
+      - '/dash'
+      - '/zsh'
+      - '/ksh'
+    CommandLine|contains:
+      - '/dev/tcp/'
+      - '/dev/udp/'
+  # --- Netcat family ---
+  selection_netcat_exec:
+    Image|endswith:
+      - '/nc'
+      - '/ncat'
+      - '/netcat'
+      - '/nc.openbsd'
+      - '/nc.traditional'
+    CommandLine|contains:
+      - ' -e '
+      - ' -c '
+      - ' --exec '
+      - ' --sh-exec '
+  # --- Socat with EXEC ---
+  selection_socat_exec:
+    Image|endswith: '/socat'
+    CommandLine|contains:
+      - 'EXEC:'
+      - 'SYSTEM:'
+  # --- Interpreter socket one-liners ---
+  selection_python_socket:
+    Image|endswith:
+      - '/python'
+      - '/python2'
+      - '/python3'
+    CommandLine|contains:
+      - 'socket.socket'
+      - 'pty.spawn'
+      - 'os.dup2'
+  selection_perl_socket:
+    Image|endswith: '/perl'
+    CommandLine|contains:
+      - 'Socket;'
+      - 'IO::Socket'
+      - 'IO::Socket::INET'
+  selection_ruby_socket:
+    Image|endswith: '/ruby'
+    CommandLine|contains:
+      - 'TCPSocket'
+      - 'Socket.new'
+  selection_php_socket:
+    Image|endswith: '/php'
+    CommandLine|contains:
+      - 'fsockopen'
+      - 'stream_socket_client'
+  # --- Named pipe relay (mkfifo) ---
+  selection_mkfifo_pipe:
+    Image|endswith: '/mkfifo'
+    CommandLine|contains:
+      - '/tmp/'
+      - '/dev/shm/'
+      - '/var/tmp/'
+  # --- Filters: legitimate tooling that looks similar ---
+  filter_ansible:
+    ParentImage|endswith:
+      - '/ansible'
+      - '/ansible-playbook'
+  filter_ssh:
+    Image|endswith:
+      - '/ssh'
+      - '/scp'
+      - '/sftp'
+  filter_socat_legit:
+    CommandLine|contains:
+      - 'TCP-LISTEN:'
+      - 'UNIX-LISTEN:'
+  filter_netcat_listen:
+    CommandLine|startswith:
+      - 'nc -l'
+      - 'nc -lv'
+      - 'nc -lvp'
+      - 'ncat -l'
+      - 'ncat -lv'
+  condition: >
+    (
+      selection_bash_dev_tcp
+      or selection_netcat_exec
+      or selection_socat_exec
+      or selection_python_socket
+      or selection_perl_socket
+      or selection_ruby_socket
+      or selection_php_socket
+      or selection_mkfifo_pipe
+    )
+    and not filter_ansible
+    and not filter_ssh
+    and not filter_socat_legit
+    and not filter_netcat_listen
+falsepositives:
+  - Legitimate developer or admin troubleshooting — an engineer testing
+    connectivity with `bash -c 'cat < /dev/tcp/host/port'`, `nc -e`, or a
+    socat EXEC test. Rare on production fleets, common on dev/staging.
+    Correlate with the operator's SSH session and the destination IP
+    (internal vs. external).
+  - Ansible, Puppet, and other automation tooling that uses socat/nc for
+    file transfer or port testing — the filter covers the primary parent
+    process but wrappers and custom playbooks may miss.
+  - Legitimate reverse-shell-like behavior in CI/CD pipelines — test
+    harnesses, integration tests, and container health checks that
+    deliberately open shell-over-socket connections to a local test
+    listener. Usually confined to build infrastructure; tune by
+    destination IP (localhost, RFC1918 test hosts).
+  - Penetration testing and red team exercises — expected to trigger;
+    suppress via source IP allow-list during scheduled engagements, or
+    route to a separate "test" severity tier.
+  - Monitoring agents that use nc/socat for health probes (e.g., custom
+    port checks written in bash) — rare but possible; tune by
+    destination and parent process per fleet.
+level: critical
