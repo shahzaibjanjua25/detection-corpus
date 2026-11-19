@@ -1,0 +1,31 @@
+technique: T1105
+name: "Ingress Tool Transfer"
+tactic: command_and_control
+rules:
+  - name: Linux Payload Downloaded to Staging Directory (correlation half)
+    id: 8a4e1c73-9d2f-4b85-a7e0-3f6c9d1e5a42
+    status: experimental
+    coverage: partial
+    notes: >
+      Detects curl/wget/scp/rsync/sftp/tftp/ftp writing to /tmp, /dev/shm,
+      /var/tmp, or /run/shm. Too noisy to alert alone (level: low); designed
+      to be the first half of the payload-retrieval correlation. Does not
+      cover: (a) downloads via compiled custom binaries, (b) downloads via
+      language one-liners (python -c urllib, perl -e, etc.), (c) in-memory
+      execution via `curl | bash` (no file written), (d) downloads to
+      non-staging paths (/opt, /home, hidden dirs).
+  - name: Linux Payload Retrieval to Staging Directory Followed by Execution (correlation)
+    id: 4c8d2f97-1b6e-4a53-9d80-5e7c3a9b2f61
+    status: experimental
+    coverage: partial
+    notes: >
+      Temporal correlation (5m, ordered) between the download half and the
+      execution half. This is the primary detection artefact; the two
+      underlying Sigma rules ship as dependencies. Does not cover: (a)
+      download-then-execute-via-script (bash /tmp/script.sh — bash's Image
+      is /bin/bash, not /tmp/script.sh), (b) slow-dwell adversaries who
+      wait longer than 5m between download and exec, (c) in-memory
+      execution (memfd_create, curl | bash). The correlation is most
+      useful when combined with Day 7 (reverse shell), because T1105 is
+      often the first step of the intrusion chain that culminates in the
+      shell.
