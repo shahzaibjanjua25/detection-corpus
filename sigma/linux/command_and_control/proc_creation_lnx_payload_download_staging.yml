@@ -1,0 +1,94 @@
+title: Linux Payload Downloaded to Staging Directory
+id: 8a4e1c73-9d2f-4b85-a7e0-3f6c9d1e5a42
+status: experimental
+description: |
+  Detects download of a file to a Linux staging directory (/tmp, /dev/shm,
+  /var/tmp, /run/shm) via curl, wget, or similar transfer tools. This is
+  half of the T1105 correlation rule — it is also useful as a standalone
+  detection when paired with a downstream network or execution alert, but
+  is too noisy to fire on its own without the correlation.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://curl.se/docs/manpage.html
+  - https://www.gnu.org/software/wget/manual/wget.html
+author: DetectionForge
+date: 2024-03-18
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection_curl:
+    Image|endswith: '/curl'
+    CommandLine|contains:
+      - ' -o /tmp/'
+      - ' -o /dev/shm/'
+      - ' -o /var/tmp/'
+      - ' -o /run/shm/'
+      - ' --output /tmp/'
+      - ' --output /dev/shm/'
+      - ' --output /var/tmp/'
+      - ' --output /run/shm/'
+  selection_wget:
+    Image|endswith: '/wget'
+    CommandLine|contains:
+      - ' -O /tmp/'
+      - ' -O /dev/shm/'
+      - ' -O /var/tmp/'
+      - ' -O /run/shm/'
+      - ' --output-document=/tmp/'
+      - ' --output-document=/dev/shm/'
+  selection_other_transfer:
+    Image|endswith:
+      - '/scp'
+      - '/rsync'
+      - '/sftp'
+      - '/tftp'
+      - '/ftp'
+    CommandLine|contains:
+      - '/tmp/'
+      - '/dev/shm/'
+      - '/var/tmp/'
+      - '/run/shm/'
+  filter_pkg_mgmt:
+    ParentImage|endswith:
+      - '/apt'
+      - '/apt-get'
+      - '/dpkg'
+      - '/yum'
+      - '/dnf'
+      - '/rpm'
+      - '/zypper'
+      - '/pacman'
+  filter_build_tools:
+    ParentImage|endswith:
+      - '/make'
+      - '/cmake'
+      - '/ninja'
+      - '/cargo'
+      - '/go'
+      - '/mvn'
+      - '/gradle'
+  filter_curl_to_stdout:
+    CommandLine|contains:
+      - '-o -'
+      - '--output -'
+  condition: >
+    (selection_curl or selection_wget or selection_other_transfer)
+    and not filter_pkg_mgmt
+    and not filter_build_tools
+    and not filter_curl_to_stdout
+falsepositives:
+  - Legitimate downloads to /tmp during troubleshooting, dev work, or
+    one-off tooling — common on dev/staging fleets, rarer on production.
+  - CI/CD runners and build hosts that download artifacts to /tmp as part
+    of normal builds — filter_build_tools covers the common parent
+    processes but custom build scripts may miss.
+  - Installer scripts (vendor shell installers, cloud-init) that download
+    to /tmp during package installation — usually one-time per host.
+  - Package manager hooks and snap/Flatpak installers that stage
+    intermediate files in /tmp — filter_pkg_mgmt covers the top-level
+    parent but not all sub-invocations.
+level: low
