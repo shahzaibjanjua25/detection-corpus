@@ -1,0 +1,55 @@
+title: Linux Payload Retrieval to Staging Directory Followed by Execution
+id: 4c8d2f97-1b6e-4a53-9d80-5e7c3a9b2f61
+status: experimental
+description: |
+  Correlates download of a file to a staging directory (/tmp, /dev/shm,
+  /var/tmp, /run/shm) with subsequent execution of that file within a
+  short window. Neither half alone is high-signal — downloads to /tmp are
+  common (package managers, installer scripts, build tools), and execution
+  of /tmp binaries is uncommon but not rare (build outputs, test harnesses).
+  The correlation of "download to staging" + "execute from staging" within
+  a short window is a strong indicator of ingress tool transfer followed by
+  immediate use, which is the standard post-exploitation pattern for
+  dropping a payload and running it.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://www.elastic.co/guide/en/security/current/linux-payload-download-execution.html
+author: DetectionForge
+date: 2024-03-18
+tags:
+  - attack.command_and_control
+  - attack.t1105
+  - attack.execution
+  - attack.t1059.004
+correlation:
+  type: temporal_ordered
+  rules:
+    - Linux Payload Downloaded to Staging Directory
+    - Linux Executable Run from Staging Directory
+  group-by:
+    - host.name
+  timespan: 5m
+  condition:
+    gte: 2
+falsepositives:
+  - Legitimate installer or build scripts that download a binary to /tmp
+    and immediately execute it — the most common benign path. Common on
+    CI/CD runners, ephemeral build hosts, and container init scripts.
+    Correlate with the parent process (build tooling, package manager) and
+    the destination (internal artifact repository vs. arbitrary external
+    host).
+  - Kubernetes init containers and cloud-init first-boot provisioning
+    that fetch a binary to /tmp and run it — expected on autoscaling
+    groups and ephemeral fleets; tune by instance launch events.
+  - Developer troubleshooting — downloading a tool (e.g., `curl -L
+    https://.../tool -o /tmp/tool && chmod +x /tmp/tool && /tmp/tool`)
+    during debugging. Common on dev/staging; the destination-IP filter
+    (internal only) reduces noise.
+  - Legitimate monitoring agents and config-management bootstrap scripts
+    that download to /tmp and execute once at install — usually
+    one-time-per-host; correlate with host provisioning events.
+  - Package managers that download to /tmp and execute an intermediate
+    script (some apt/rpm hooks, snap installers) — parent-process filter
+    on the underlying Sigma rules reduces this, but not fully.
+level: high
